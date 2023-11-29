@@ -11,7 +11,6 @@ before_build:
 - appveyor-retry dotnet restore "Source\Samples\SQLite\Samples.sln"
 - appveyor-retry dotnet restore "Source\Samples\SQLServer\Samples.sln"
 build_script:
-- dotnet build "Source\DotNetWorkQueue.sln" -c Debug
 - dotnet build "Source\Samples\SampleShared\SampleShared.sln" -c Debug
 - dotnet build "Source\Samples\LiteDb\Samples.sln" -c Debug
 - dotnet build "Source\Samples\PostgreSQL\Samples.sln" -c Debug
