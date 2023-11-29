@@ -1,0 +1,20 @@
+version: 0.7.3.{build}
+branches:
+  only:
+  - master
+image: Visual Studio 2022
+before_build:
+- appveyor-retry dotnet restore "Source\Samples\SampleShared\SampleShared.sln"
+- appveyor-retry dotnet restore "Source\Samples\LiteDb\Samples.sln"
+- appveyor-retry dotnet restore "Source\Samples\PostgreSQL\Samples.sln"
+- appveyor-retry dotnet restore "Source\Samples\Redis\Samples.sln"
+- appveyor-retry dotnet restore "Source\Samples\SQLite\Samples.sln"
+- appveyor-retry dotnet restore "Source\Samples\SQLServer\Samples.sln"
+build_script:
+- dotnet build "Source\DotNetWorkQueue.sln" -c Debug
+- dotnet build "Source\Samples\SampleShared\SampleShared.sln" -c Debug
+- dotnet build "Source\Samples\LiteDb\Samples.sln" -c Debug
+- dotnet build "Source\Samples\PostgreSQL\Samples.sln" -c Debug
+- dotnet build "Source\Samples\Redis\Samples.sln" -c Debug
+- dotnet build "Source\Samples\SQLite\Samples.sln" -c Debug
+- dotnet build "Source\Samples\SQLServer\Samples.sln" -c Debug
