@@ -65,7 +65,7 @@ namespace RedisSchedulerConsumer
                                 new List<TimeSpan>
                                     {TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(6), TimeSpan.FromSeconds(9)});
 
-                            queue.Start(); //when running linq statements, there is no message handler, as the producer tells us what to run
+                            queue.Start(CreateNotifications.Create(log)); //when running linq statements, there is no message handler, as the producer tells us what to run
                             Console.WriteLine("Processing messages - press any key to stop");
                             Console.ReadKey((true));
                         }

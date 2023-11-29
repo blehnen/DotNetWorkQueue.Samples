@@ -16,9 +16,9 @@
 	<ItemGroup>
 		<PackageReference Include="App.Metrics.Extensions.Configuration" Version="4.3.0" />
 		<PackageReference Include="App.Metrics.Reporting.InfluxDB" Version="4.3.0" />
-		<PackageReference Include="DotNetWorkQueue" Version="0.7.1" />
-		<PackageReference Include="DotNetWorkQueue.AppMetrics" Version="0.7.1" />
-		<PackageReference Include="DotNetWorkQueue.Transport.LiteDb" Version="0.7.1" />
+		<PackageReference Include="DotNetWorkQueue" Version="0.7.3" />
+		<PackageReference Include="DotNetWorkQueue.AppMetrics" Version="0.7.3" />
+		<PackageReference Include="DotNetWorkQueue.Transport.LiteDb" Version="0.7.3" />
 		<PackageReference Include="LiteDB" Version="5.0.17" />
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
@@ -45,7 +45,7 @@
 		<PackageReference Include="Polly.Caching.Memory" Version="3.0.2" />
 		<PackageReference Include="Serilog" Version="3.1.1" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
 		<PackageReference Include="SimpleInjector" Version="5.4.2" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
 		<PackageReference Include="System.Buffers" Version="4.5.1" />

@@ -20,9 +20,9 @@
     <PackageReference Include="App.Metrics.Core" Version="4.3.0" />
     <PackageReference Include="App.Metrics.Formatters.Ascii" Version="4.3.0" />
     <PackageReference Include="App.Metrics.Formatters.Json" Version="4.3.0" />
-    <PackageReference Include="DotNetWorkQueue" Version="0.7.1" />
-    <PackageReference Include="DotNetWorkQueue.AppMetrics" Version="0.7.1" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.7.1" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.7.3" />
+    <PackageReference Include="DotNetWorkQueue.AppMetrics" Version="0.7.3" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.7.3" />
     <PackageReference Include="Jaeger.Thrift" Version="0.3.7" />
     <PackageReference Include="Jaeger.Thrift.VendoredThrift" Version="0.3.7" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
@@ -55,7 +55,7 @@
     <PackageReference Include="Polly.Caching.Memory" Version="3.0.2" />
     <PackageReference Include="Polly.Contrib.Simmy" Version="0.3.0" />
     <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
     <PackageReference Include="SimpleInjector" Version="5.4.2" />
     <PackageReference Include="Stub.System.Data.SQLite.Core.NetFramework" Version="1.0.118" />
     <PackageReference Include="System.AppContext" Version="4.3.0" />

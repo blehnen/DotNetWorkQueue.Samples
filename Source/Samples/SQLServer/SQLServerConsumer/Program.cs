@@ -73,7 +73,7 @@ namespace SQLServerConsumer
                         queue.Configuration.SetUserParametersAndClause(() => Parameters(dayofWeek), WhereClause);
                     }
 
-                    queue.Start<SimpleMessage>(MessageProcessing.HandleMessages);
+                    queue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
                     Console.WriteLine("Processing messages - press any key to stop");
                     Console.ReadKey((true));
                 }

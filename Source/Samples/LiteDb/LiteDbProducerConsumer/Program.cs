@@ -120,7 +120,7 @@ namespace LiteDbProducerConsumer
                         consumeQueue.Configuration.MessageExpiration.Enabled = true;
                         consumeQueue.Configuration.MessageExpiration.MonitorTime =
                             TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
-                        consumeQueue.Start<SimpleMessage>(MessageProcessing.HandleMessages);
+                        consumeQueue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
 
                         using (var queue = queueContainer.CreateProducer<SimpleMessage>(queueConnection))
                         {
