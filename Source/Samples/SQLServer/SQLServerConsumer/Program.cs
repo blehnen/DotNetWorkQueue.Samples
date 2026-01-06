@@ -2,13 +2,13 @@
 using DotNetWorkQueue.Configuration;
 using DotNetWorkQueue.Transport.SqlServer;
 using DotNetWorkQueue.Transport.SqlServer.Basic;
+using Microsoft.Data.SqlClient;
 using SampleShared;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 
 namespace SQLServerConsumer
