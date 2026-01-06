@@ -48,7 +48,7 @@ Metrics can be disabled in app.config
 
 License
 --------
-Copyright (c) 2023 Brian Lehnen
+Copyright (c) 2017-2026 blehnen
 
 All rights reserved.
 
