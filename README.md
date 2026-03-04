@@ -15,6 +15,7 @@ DotNetWorkQueue.Samples
 - Consumer for LINQ
 - Scheduler
 - Scheduler Consumer
+- Dashboard.Api
 
 [**Sample Transports**]
 
@@ -29,6 +30,10 @@ DotNetWorkQueue.Samples
 - Set connection strings and queue name in app.config
 - Enable/disable GZIP and encryption as needed in app.config
 - Enable/disable tracing and metrics in app.config
+
+[**Configuration Dashboard.Api**]
+
+- Set connection strings and queue names in appsettings.json, see appsettings.example.json for examples
 
 [**Trace**]
 

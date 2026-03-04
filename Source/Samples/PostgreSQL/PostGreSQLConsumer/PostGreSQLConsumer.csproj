@@ -11,9 +11,9 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue" Version="0.8.0" />
-    <PackageReference Include="DotNetWorkQueue.AppMetrics" Version="0.8.0" />
-    <PackageReference Include="DotNetWorkQueue.Transport.PostgreSQL" Version="0.8.0" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.9.0" />
+    <PackageReference Include="DotNetWorkQueue.AppMetrics" Version="0.9.0" />
+    <PackageReference Include="DotNetWorkQueue.Transport.PostgreSQL" Version="0.9.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />

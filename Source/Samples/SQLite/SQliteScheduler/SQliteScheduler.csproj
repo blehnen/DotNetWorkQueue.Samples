@@ -17,9 +17,9 @@
     <PackageReference Include="App.Metrics.Core" Version="4.3.0" />
     <PackageReference Include="App.Metrics.Formatters.Ascii" Version="4.3.0" />
     <PackageReference Include="App.Metrics.Formatters.Json" Version="4.3.0" />
-    <PackageReference Include="DotNetWorkQueue" Version="0.8.0" />
-    <PackageReference Include="DotNetWorkQueue.AppMetrics" Version="0.8.0" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.8.0" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.9.0" />
+    <PackageReference Include="DotNetWorkQueue.AppMetrics" Version="0.9.0" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.0" />
     <PackageReference Include="Jaeger.Thrift" Version="0.3.7" />
     <PackageReference Include="Jaeger.Thrift.VendoredThrift" Version="0.3.7" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.1" />
