@@ -1,56 +1,47 @@
-DotNetWorkQueue.Samples
-=========
+# DotNetWorkQueue.Samples
 
-[**Compile order**]
-- \Samples\SampleShared\SampleShared.sln
-- \\Samples\solutions
+[![Build status](https://ci.appveyor.com/api/projects/status/51xd05902ip818qa?svg=true)](https://ci.appveyor.com/project/blehnen/dotnetworkqueue-samples)
 
+Sample applications for [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue). Build `SampleShared.sln` first — all other projects depend on it.
 
-[**Samples**]
+## Samples
 
-- Producer
-- Producer LINQ
-- Consumer with dedicated threads
-- Consumer with dedicated reader and seperate processing thread pool
-- Consumer for LINQ
-- Scheduler
-- Scheduler Consumer
-- Dashboard.Api
+| Sample | Description |
+|--------|-------------|
+| Producer | Queue messages |
+| ProducerLinq | Queue LINQ expressions |
+| Consumer | Dedicated processing threads |
+| ConsumerAsync | Dedicated reader + separate processing thread pool |
+| ConsumerLinq | Process LINQ expressions |
+| Scheduler | Recurring jobs |
+| SchedulerConsumer | Scheduler + consumer |
+| Dashboard.Api | Queue monitoring API (ASP.NET Core, net8.0 only) |
 
-[**Sample Transports**]
+## Transports
 
-- Redis
-- SQL Server
-- SQLite
-- PostGresSQL
-- LiteDB
+| Transport |
+|-----------|
+| Redis |
+| SQL Server |
+| SQLite |
+| PostgreSQL |
+| LiteDB |
 
-[**Configuration**]
+## Configuration
 
-- Set connection strings and queue name in app.config
-- Enable/disable GZIP and encryption as needed in app.config
-- Enable/disable tracing and metrics in app.config
+| Project | Config file | Details |
+|---------|-------------|---------|
+| Samples | `App.config` | Connection string, queue name, GZIP, encryption, tracing, and metrics toggles |
+| Dashboard.Api | `appsettings.json` | Connection strings and queue names (see `appsettings.example.json`). Swagger at `/swagger` |
 
-[**Configuration Dashboard.Api**]
+## Observability
 
-- Set connection strings and queue names in appsettings.json, see appsettings.example.json for examples
-- Swagger is at /swagger in the browser that is launched
+| Feature | Config file | Backend |
+|---------|-------------|---------|
+| Tracing | `tracesettings.json` | [Jaeger](https://www.jaegertracing.io/download/) |
+| Metrics | `metricsettings.json` | InfluxDB |
 
-[**Trace**]
-
-Jaeger is used for the sample. Configuration file for all samples is tracesettings.json. You will need to modify to point to your instance.
-
-For testing, the all-in-one system works fine.  It can be found as a docker image or windows/linux executable here
-
-https://www.jaegertracing.io/download/
-
-Tracing can be disabled in app.config
-
-[**Metrics**]
-
-InfluxDB is used for the samples.  Configuration file for all samples is metricsettings.json. You will need to modify to point to your instance.
-
-Metrics can be disabled in app.config
+Both can be enabled/disabled in `App.config`. Point the JSON config files at your instances.
 
 License
 --------
