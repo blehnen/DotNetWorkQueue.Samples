@@ -70,8 +70,7 @@ namespace RedisConsumerLinq
                             queue.Configuration.MessageExpiration.MonitorTime =
                                 TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                             queue.Start(CreateNotifications.Create(log));
-                            Console.WriteLine("Processing messages - press any key to stop");
-                            Console.ReadKey((true));
+                            Helpers.WaitForCancelKeyPress();
 
                             //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
                             if (SharedConfiguration.EnableTrace)

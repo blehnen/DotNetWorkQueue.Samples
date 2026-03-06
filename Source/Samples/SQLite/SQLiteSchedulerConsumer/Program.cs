@@ -84,8 +84,7 @@ namespace SQLiteSchedulerConsumer
                             queue.Configuration.MessageExpiration.MonitorTime =
                                 TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                             queue.Start(CreateNotifications.Create(log)); //when running linq statements, there is no message handler, as the producer tells us what to run
-                            Console.WriteLine("Processing messages - press any key to stop");
-                            Console.ReadKey((true));
+                            Helpers.WaitForCancelKeyPress();
                         }
                     }
                 }

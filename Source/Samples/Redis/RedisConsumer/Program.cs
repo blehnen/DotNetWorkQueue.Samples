@@ -35,8 +35,11 @@ namespace RedisConsumer
             };
 
             using (var queueContainer = new QueueContainer<RedisQueueInit>(serviceRegister =>
-                           AddInjectors(serviceRegister, queueOptions)
-                       , options => SetOptions(options, SharedConfiguration.EnableChaos)))
+                       {
+                           Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "RedisConsumer", serviceRegister);
+                           serviceRegister.RegisterNonScopedSingleton(queueOptions);
+                       }
+                       , options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
             {
                 using (var queue = queueContainer.CreateConsumer(queueConnection))
                 {
@@ -52,8 +55,7 @@ namespace RedisConsumer
                     queue.Configuration.MessageExpiration.Enabled = true;
                     queue.Configuration.MessageExpiration.MonitorTime = TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                     queue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
-                    Console.WriteLine("Processing messages - press any key to stop");
-                    Console.ReadKey((true));
+                    Helpers.WaitForCancelKeyPress();
                 }
             }
 
@@ -62,16 +64,6 @@ namespace RedisConsumer
                 System.Threading.Thread.Sleep(2000);
         }
 
-        public static void AddInjectors(IContainer container, RedisQueueTransportOptions options)
-        {
-            container.RegisterNonScopedSingleton(options);
-        }
-
-        public static void SetOptions(IContainer container, bool enableChaos)
-        {
-            var pol = container.GetInstance<IPolicies>();
-            pol.EnableChaos = enableChaos;
-        }
     }
 
 }
