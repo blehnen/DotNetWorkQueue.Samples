@@ -2,14 +2,9 @@
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
-using App.Metrics;
-using App.Metrics.Extensions.Configuration;
-using App.Metrics.Formatters.InfluxDB;
-using App.Metrics.Reporting.InfluxDB;
-using App.Metrics.Scheduling;
 using DotNetWorkQueue;
 using DotNetWorkQueue.Interceptors;
+using DotNetWorkQueue.Metrics.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
@@ -22,9 +17,8 @@ namespace SampleShared
 {
     public static class Injectors
     {
-        private static DotNetWorkQueue.AppMetrics.Metrics _metrics;
+        private static MetricsNet _metrics;
         private static ActivitySource _tracer;
-        private static AppMetricsTaskScheduler _metricScheduler;
 
         public static void AddInjectors(ILoggerFactory logFactory,
             bool addTrace,
@@ -101,37 +95,10 @@ namespace SampleShared
                 return;
             }
 
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("metricsettings.json")
-                .Build();
-
-            var influxOptions = new MetricsReportingInfluxDbOptions();
-            configuration.GetSection(nameof(MetricsReportingInfluxDbOptions)).Bind(influxOptions);
-
-            var metricsRoot = new MetricsBuilder()
-                .Configuration.ReadFrom(configuration)
-                        .Configuration.Configure(
-                            options =>
-                            {
-                                options.AddServerTag();
-                                options.AddAppTag(appName);
-                            })
-                .Report.ToInfluxDb(influxOptions)
-                .Build();
-
-
-            var metrics = new DotNetWorkQueue.AppMetrics.Metrics(metricsRoot);
+            // DotNetWorkQueue 0.9.1+ uses System.Diagnostics.Metrics built into the core library.
+            // Configure an OpenTelemetry MeterProvider in your host to export metrics (e.g. to OTLP/Prometheus).
+            var metrics = new MetricsNet();
             container.RegisterNonScopedSingleton<IMetrics>(metrics);
-
-            var scheduler = new AppMetricsTaskScheduler(
-                TimeSpan.FromSeconds(3),
-                async () =>
-                {
-                    await Task.WhenAll(metricsRoot.ReportRunner.RunAllAsync());
-                });
-            scheduler.Start();
-            _metricScheduler = scheduler;
             _metrics = metrics;
         }
 
