@@ -1,6 +1,6 @@
 # DotNetWorkQueue.Samples
 
-[![Build status](https://ci.appveyor.com/api/projects/status/51xd05902ip818qa?svg=true)](https://ci.appveyor.com/project/blehnen/dotnetworkqueue-samples)
+[![Build status](https://github.com/blehnen/DotNetWorkQueue.Samples/actions/workflows/ci.yml/badge.svg)](https://github.com/blehnen/DotNetWorkQueue.Samples/actions/workflows/ci.yml)
 
 Sample applications for [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue). Build `SampleShared.sln` first — all other projects depend on it.
 

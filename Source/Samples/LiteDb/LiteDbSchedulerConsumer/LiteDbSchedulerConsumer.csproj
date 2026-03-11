@@ -60,6 +60,9 @@
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
 		<PackageReference Include="System.ValueTuple" Version="4.6.1" />
 	</ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.3" />
+  </ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
 		<Reference Include="SampleShared">
 			<HintPath>..\..\SampleShared\bin\Debug\net48\SampleShared.dll</HintPath>

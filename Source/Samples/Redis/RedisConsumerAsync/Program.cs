@@ -66,7 +66,13 @@ namespace RedisConsumerAsync
                             queue.Configuration.MessageExpiration.MonitorTime =
                                 TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                             queue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
+#if NET8_0_OR_GREATER
+                            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "RedisConsumerAsync");
+#endif
                             Helpers.WaitForCancelKeyPress();
+#if NET8_0_OR_GREATER
+                            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
                         }
                     }
                 }

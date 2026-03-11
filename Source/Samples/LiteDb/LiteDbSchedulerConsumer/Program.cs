@@ -83,7 +83,13 @@ namespace LiteDbSchedulerConsumer
                             queue.Configuration.MessageExpiration.MonitorTime =
                                 TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                             queue.Start(CreateNotifications.Create(log)); //when running linq statements, there is no message handler, as the producer tells us what to run
+#if NET8_0_OR_GREATER
+                            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "LiteDbSchedulerConsumer");
+#endif
                             Helpers.WaitForCancelKeyPress();
+#if NET8_0_OR_GREATER
+                            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
                         }
                     }
                 }

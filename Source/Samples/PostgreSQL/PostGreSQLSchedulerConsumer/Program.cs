@@ -85,7 +85,13 @@ namespace PostGreSQLSchedulerConsumer
                                     {TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(6), TimeSpan.FromSeconds(9)});
 
                             queue.Start(CreateNotifications.Create(log)); //when running linq statements, there is no message handler, as the producer tells us what to run
+#if NET8_0_OR_GREATER
+                            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "PostGreSQLSchedulerConsumer");
+#endif
                             Helpers.WaitForCancelKeyPress();
+#if NET8_0_OR_GREATER
+                            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
                         }
                     }
                 }

@@ -74,7 +74,13 @@ namespace SQLServerConsumer
                     }
 
                     queue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
+#if NET8_0_OR_GREATER
+                    var dashboardClient = Injectors.StartDashboardRegistration(queueName, "SQLServerConsumer");
+#endif
                     Helpers.WaitForCancelKeyPress();
+#if NET8_0_OR_GREATER
+                    Injectors.StopDashboardRegistration(dashboardClient);
+#endif
                 }
             }
 

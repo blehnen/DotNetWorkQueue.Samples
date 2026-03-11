@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Display .NET version
+        run: dotnet --version
+
+      # SampleShared must be built first — all other projects reference its compiled DLL
+      - name: Restore SampleShared
+        run: dotnet restore "Source\Samples\SampleShared\SampleShared.sln"
+
+      - name: Build SampleShared
+        run: dotnet build "Source\Samples\SampleShared\SampleShared.sln" -c Debug --no-restore
+
+      - name: Restore LiteDb
+        run: dotnet restore "Source\Samples\LiteDb\Samples.sln"
+
+      - name: Build LiteDb
+        run: dotnet build "Source\Samples\LiteDb\Samples.sln" -c Debug --no-restore
+
+      - name: Restore PostgreSQL
+        run: dotnet restore "Source\Samples\PostgreSQL\Samples.sln"
+
+      - name: Build PostgreSQL
+        run: dotnet build "Source\Samples\PostgreSQL\Samples.sln" -c Debug --no-restore
+
+      - name: Restore Redis
+        run: dotnet restore "Source\Samples\Redis\Samples.sln"
+
+      - name: Build Redis
+        run: dotnet build "Source\Samples\Redis\Samples.sln" -c Debug --no-restore
+
+      - name: Restore SQLite
+        run: dotnet restore "Source\Samples\SQLite\Samples.sln"
+
+      - name: Build SQLite
+        run: dotnet build "Source\Samples\SQLite\Samples.sln" -c Debug --no-restore
+
+      - name: Restore SQLServer
+        run: dotnet restore "Source\Samples\SQLServer\Samples.sln"
+
+      - name: Build SQLServer
+        run: dotnet build "Source\Samples\SQLServer\Samples.sln" -c Debug --no-restore
+
+      - name: Restore DashBoard.Api
+        run: dotnet restore "Source\Samples\DashBoard.Api\DashBoard.Api.sln"
+
+      - name: Build DashBoard.Api
+        run: dotnet build "Source\Samples\DashBoard.Api\DashBoard.Api.sln" -c Debug --no-restore

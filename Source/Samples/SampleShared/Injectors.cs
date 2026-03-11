@@ -12,6 +12,9 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ConfigurationBuilder = Microsoft.Extensions.Configuration.ConfigurationBuilder;
 using IMetrics = DotNetWorkQueue.IMetrics;
+#if NET8_0_OR_GREATER
+using DotNetWorkQueue.Dashboard.Client;
+#endif
 
 namespace SampleShared
 {
@@ -101,6 +104,32 @@ namespace SampleShared
             container.RegisterNonScopedSingleton<IMetrics>(metrics);
             _metrics = metrics;
         }
+
+#if NET8_0_OR_GREATER
+        public static DashboardConsumerClient StartDashboardRegistration(string queueName, string friendlyName)
+        {
+            if (!SharedConfiguration.EnableDashboard)
+                return null;
+
+            var options = new DashboardClientOptions
+            {
+                DashboardApiUrl = SharedConfiguration.DashboardApiUrl,
+                QueueName = queueName,
+                FriendlyName = friendlyName
+            };
+
+            var client = new DashboardConsumerClient(options);
+            client.StartAsync().GetAwaiter().GetResult();
+            return client;
+        }
+
+        public static void StopDashboardRegistration(DashboardConsumerClient client)
+        {
+            if (client == null) return;
+            client.StopAsync().GetAwaiter().GetResult();
+            client.Dispose();
+        }
+#endif
 
         private static void AddTrace(IContainer container)
         {
