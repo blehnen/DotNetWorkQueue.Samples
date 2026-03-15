@@ -1,0 +1,5 @@
+{
+  "Metrics": {
+    "OtlpEndpoint": "http://192.168.0.2:9090/api/v1/otlp/v1/metrics"
+  }
+}

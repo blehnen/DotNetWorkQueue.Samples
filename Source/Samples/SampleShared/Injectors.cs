@@ -8,6 +8,7 @@ using DotNetWorkQueue.Metrics.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ConfigurationBuilder = Microsoft.Extensions.Configuration.ConfigurationBuilder;
@@ -21,6 +22,7 @@ namespace SampleShared
     public static class Injectors
     {
         private static MetricsNet _metrics;
+        private static MeterProvider _meterProvider;
         private static ActivitySource _tracer;
 
         public static void AddInjectors(ILoggerFactory logFactory,
@@ -99,10 +101,67 @@ namespace SampleShared
             }
 
             // DotNetWorkQueue 0.9.1+ uses System.Diagnostics.Metrics built into the core library.
-            // Configure an OpenTelemetry MeterProvider in your host to export metrics (e.g. to OTLP/Prometheus).
+            // Export metrics via OTLP to Prometheus (or any OTLP-compatible backend).
+            // Prometheus supports OTLP ingestion natively since v2.47.
+            //
+            // Configure the endpoint in metricsettings.json, or fall back to console output.
+            var metricsConfig = LoadMetricsConfig();
+            var otlpEndpoint = metricsConfig?["OtlpEndpoint"];
+
+            var meterBuilder = Sdk.CreateMeterProviderBuilder()
+                .AddMeter("DotNetWorkQueue");
+
+            if (!string.IsNullOrEmpty(otlpEndpoint))
+            {
+                meterBuilder.AddOtlpExporter((exporterOptions, readerOptions) =>
+                {
+                    exporterOptions.Endpoint = new Uri(otlpEndpoint);
+                    exporterOptions.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+                    readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions
+                    {
+                        ExportIntervalMilliseconds = 5000
+                    };
+                });
+                Console.WriteLine($"Metrics enabled — OTLP export to {otlpEndpoint} (every 5s)");
+            }
+            else
+            {
+                meterBuilder.AddConsoleExporter((exporterOptions, readerOptions) =>
+                {
+                    readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions
+                    {
+                        ExportIntervalMilliseconds = 5000
+                    };
+                });
+                Console.WriteLine("Metrics enabled — console output (set OtlpEndpoint in metricsettings.json for Prometheus)");
+            }
+
+            // Create MetricsNet (and its Meter) BEFORE building the provider,
+            // so the provider can discover the meter instance.
             var metrics = new MetricsNet();
+
+            _meterProvider = meterBuilder.Build();
+
             container.RegisterNonScopedSingleton<IMetrics>(metrics);
             _metrics = metrics;
+        }
+
+        private static IConfigurationSection LoadMetricsConfig()
+        {
+            try
+            {
+                if (!File.Exists("metricsettings.json"))
+                    return null;
+
+                return new ConfigurationBuilder()
+                    .AddJsonFile("metricsettings.json", optional: true)
+                    .Build()
+                    .GetSection("Metrics");
+            }
+            catch
+            {
+                return null;
+            }
         }
 
 #if NET8_0_OR_GREATER

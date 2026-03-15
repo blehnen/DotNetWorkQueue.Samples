@@ -40,6 +40,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="OpenTelemetry" Version="1.14.0" />
     <PackageReference Include="OpenTelemetry.Api" Version="1.14.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.14.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0" />
     <PackageReference Include="OpenTracing" Version="0.12.1" />
     <PackageReference Include="Polly.Caching.Memory" Version="3.0.2" />
@@ -128,11 +129,13 @@
 		<Reference Include="System.Data.DataSetExtensions" />
 	</ItemGroup>
   <ItemGroup>
-    <None Include="metricsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="tracesettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\SampleShared\metricsettings.json" Link="metricsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

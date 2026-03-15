@@ -36,7 +36,8 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="OpenTelemetry" Version="1.14.0" />
 		<PackageReference Include="OpenTelemetry.Api" Version="1.14.0" />
-		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0" />
+		<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.14.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0" />
 		<PackageReference Include="Polly.Caching.Memory" Version="3.0.2" />
 		<PackageReference Include="Serilog" Version="4.3.0" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
@@ -79,11 +80,13 @@
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
-    <None Include="metricsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="tracesettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\SampleShared\metricsettings.json" Link="metricsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
