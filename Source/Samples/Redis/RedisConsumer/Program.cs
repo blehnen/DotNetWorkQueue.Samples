@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using SntpTimeConfiguration = DotNetWorkQueue.Transport.Redis.Basic.Time.SntpTimeConfiguration;
 
 namespace RedisConsumer
 {
