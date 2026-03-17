@@ -1,4 +1,4 @@
-﻿using DotNetWorkQueue.Notifications;
+using DotNetWorkQueue.Notifications;
 using DotNetWorkQueue.Queue;
 using Serilog;
 

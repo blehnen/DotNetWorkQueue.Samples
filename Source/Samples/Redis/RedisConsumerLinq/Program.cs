@@ -27,6 +27,9 @@ namespace RedisConsumerLinq
             var connectionString = ConfigurationManager.AppSettings.ReadSetting("Database");
             var queueConnection = new QueueConnection(queueName, connectionString);
 
+#if NET8_0_OR_GREATER
+            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "RedisConsumerLinq");
+#endif
             using (var schedulerContainer = new SchedulerContainer(serviceRegister =>
                 Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics,
                     SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "RedisConsumerLinq",
@@ -70,13 +73,7 @@ namespace RedisConsumerLinq
                             queue.Configuration.MessageExpiration.MonitorTime =
                                 TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                             queue.Start(CreateNotifications.Create(log));
-#if NET8_0_OR_GREATER
-                            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "RedisConsumerLinq");
-#endif
                             Helpers.WaitForCancelKeyPress();
-#if NET8_0_OR_GREATER
-                            Injectors.StopDashboardRegistration(dashboardClient);
-#endif
 
                             //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
                             if (SharedConfiguration.EnableTrace)
@@ -85,6 +82,9 @@ namespace RedisConsumerLinq
                     }
                 }
             }
+#if NET8_0_OR_GREATER
+            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
         }
     }
 }

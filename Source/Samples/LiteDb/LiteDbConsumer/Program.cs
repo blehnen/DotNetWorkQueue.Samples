@@ -44,6 +44,9 @@ namespace LiteDbConsumer
                 }
             }
 
+#if NET8_0_OR_GREATER
+            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "LiteDbConsumer");
+#endif
             using (var queueContainer = new QueueContainer<LiteDbMessageQueueInit>(serviceRegister =>
                 Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "LiteDbConsumer", serviceRegister),
                 options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
@@ -62,15 +65,12 @@ namespace LiteDbConsumer
                     queue.Configuration.MessageExpiration.Enabled = true;
                     queue.Configuration.MessageExpiration.MonitorTime = TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                     queue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
-#if NET8_0_OR_GREATER
-                    var dashboardClient = Injectors.StartDashboardRegistration(queueName, "LiteDbConsumer");
-#endif
                     Helpers.WaitForCancelKeyPress();
-#if NET8_0_OR_GREATER
-                    Injectors.StopDashboardRegistration(dashboardClient);
-#endif
                 }
             }
+#if NET8_0_OR_GREATER
+            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
 
             //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
             if (SharedConfiguration.EnableTrace)

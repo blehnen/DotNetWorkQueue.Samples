@@ -45,6 +45,9 @@ namespace PostGreSQLSchedulerConsumer
                 }
             }
 
+#if NET8_0_OR_GREATER
+            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "PostGreSQLSchedulerConsumer");
+#endif
             using (var schedulerContainer = new SchedulerContainer(serviceRegister =>
                 Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics,
                     SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption,
@@ -85,17 +88,14 @@ namespace PostGreSQLSchedulerConsumer
                                     {TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(6), TimeSpan.FromSeconds(9)});
 
                             queue.Start(CreateNotifications.Create(log)); //when running linq statements, there is no message handler, as the producer tells us what to run
-#if NET8_0_OR_GREATER
-                            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "PostGreSQLSchedulerConsumer");
-#endif
                             Helpers.WaitForCancelKeyPress();
-#if NET8_0_OR_GREATER
-                            Injectors.StopDashboardRegistration(dashboardClient);
-#endif
                         }
                     }
                 }
             }
+#if NET8_0_OR_GREATER
+            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
 
             //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
             if (SharedConfiguration.EnableTrace)

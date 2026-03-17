@@ -45,6 +45,9 @@ namespace SQLiteSchedulerConsumer
                 }
             }
 
+#if NET8_0_OR_GREATER
+            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "SQLiteSchedulerConsumer");
+#endif
             using (var schedulerContainer = new SchedulerContainer(serviceRegister =>
                 Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "SQLiteSchedulerConsumer", serviceRegister),
                 options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
@@ -84,17 +87,14 @@ namespace SQLiteSchedulerConsumer
                             queue.Configuration.MessageExpiration.MonitorTime =
                                 TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                             queue.Start(CreateNotifications.Create(log)); //when running linq statements, there is no message handler, as the producer tells us what to run
-#if NET8_0_OR_GREATER
-                            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "SQLiteSchedulerConsumer");
-#endif
                             Helpers.WaitForCancelKeyPress();
-#if NET8_0_OR_GREATER
-                            Injectors.StopDashboardRegistration(dashboardClient);
-#endif
                         }
                     }
                 }
             }
+#if NET8_0_OR_GREATER
+            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
 
             //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
             if (SharedConfiguration.EnableTrace)

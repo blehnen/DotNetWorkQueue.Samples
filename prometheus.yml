@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# The samples push metrics to Prometheus via OTLP over HTTP.
+# Prometheus receives OTLP on its own HTTP port at /api/v1/otlp/v1/metrics.
+#
+# Start Prometheus with:
+#   prometheus --config.file=prometheus.yml --web.enable-otlp-receiver
+#
+# The samples will push to http://<prometheus-host>:9090/api/v1/otlp/v1/metrics
+# (configured in SampleShared/metricsettings.json)

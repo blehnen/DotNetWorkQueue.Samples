@@ -43,6 +43,9 @@ namespace PostGreSQLConsumer
                 }
             }
 
+#if NET8_0_OR_GREATER
+            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "PostGreSQLConsumer");
+#endif
             using (var queueContainer = new QueueContainer<PostgreSqlMessageQueueInit>(serviceRegister =>
                 Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "PostgreSqlConsumer", serviceRegister)
                 , options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
@@ -61,15 +64,12 @@ namespace PostGreSQLConsumer
                     queue.Configuration.MessageExpiration.Enabled = true;
                     queue.Configuration.MessageExpiration.MonitorTime = TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                     queue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
-#if NET8_0_OR_GREATER
-                    var dashboardClient = Injectors.StartDashboardRegistration(queueName, "PostGreSQLConsumer");
-#endif
                     Helpers.WaitForCancelKeyPress();
-#if NET8_0_OR_GREATER
-                    Injectors.StopDashboardRegistration(dashboardClient);
-#endif
                 }
             }
+#if NET8_0_OR_GREATER
+            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
 
             //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
             if (SharedConfiguration.EnableTrace)

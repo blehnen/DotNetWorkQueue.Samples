@@ -95,6 +95,9 @@ namespace LiteDbProducerConsumer
                     else log.Information("Queue already exists; not creating");
                 }
 
+#if NET8_0_OR_GREATER
+                var dashboardClient = Injectors.StartDashboardRegistration(queueName, "LiteDbProducerConsumer");
+#endif
                 //create the consumer and the producer
                 using (var queueContainer = new QueueContainer<LiteDbMessageQueueInit>(
                     x => RegisterService(x, log, scope),
@@ -121,9 +124,6 @@ namespace LiteDbProducerConsumer
                         consumeQueue.Configuration.MessageExpiration.MonitorTime =
                             TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
                         consumeQueue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
-#if NET8_0_OR_GREATER
-                        var dashboardClient = Injectors.StartDashboardRegistration(queueName, "LiteDbProducerConsumer");
-#endif
 
                         using (var queue = queueContainer.CreateProducer<SimpleMessage>(queueConnection))
                         {
@@ -133,11 +133,11 @@ namespace LiteDbProducerConsumer
                                 RunProducer.RunLoop(queue, ExpiredData, ExpiredDataFuture, DelayedProcessing, admin);
                             }
                         }
-#if NET8_0_OR_GREATER
-                        Injectors.StopDashboardRegistration(dashboardClient);
-#endif
                     }
                 }
+#if NET8_0_OR_GREATER
+                Injectors.StopDashboardRegistration(dashboardClient);
+#endif
             }
 
             //dispose of direct or memory connection (if present, noop otherwise)

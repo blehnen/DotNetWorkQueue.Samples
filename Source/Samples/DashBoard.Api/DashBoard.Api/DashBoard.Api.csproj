@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue.Dashboard.Api" Version="0.9.6" />
-    <PackageReference Include="DotNetWorkQueue.Dashboard.Ui" Version="0.9.6" />
+    <PackageReference Include="DotNetWorkQueue.Dashboard.Api" Version="0.9.8" />
+    <PackageReference Include="DotNetWorkQueue.Dashboard.Ui" Version="0.9.8" />
     <PackageReference Include="MudBlazor" Version="9.1.0" />
     <PackageReference Include="DotNetWorkQueue.Transport.PostgreSQL" Version="0.9.6" />
     <PackageReference Include="DotNetWorkQueue.Transport.SqlServer" Version="0.9.6" />

@@ -47,6 +47,9 @@ namespace SQLServerConsumer
                 }
             }
 
+#if NET8_0_OR_GREATER
+            var dashboardClient = Injectors.StartDashboardRegistration(queueName, "SQLServerConsumer");
+#endif
             using (var queueContainer = new QueueContainer<SqlServerMessageQueueInit>(serviceRegister =>
                 Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "SQLServerConsumer", serviceRegister)
                 , options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
@@ -74,15 +77,12 @@ namespace SQLServerConsumer
                     }
 
                     queue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
-#if NET8_0_OR_GREATER
-                    var dashboardClient = Injectors.StartDashboardRegistration(queueName, "SQLServerConsumer");
-#endif
                     Helpers.WaitForCancelKeyPress();
-#if NET8_0_OR_GREATER
-                    Injectors.StopDashboardRegistration(dashboardClient);
-#endif
                 }
             }
+#if NET8_0_OR_GREATER
+            Injectors.StopDashboardRegistration(dashboardClient);
+#endif
 
             //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
             if (SharedConfiguration.EnableTrace)

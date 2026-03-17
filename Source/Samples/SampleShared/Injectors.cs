@@ -5,6 +5,7 @@ using System.IO;
 using DotNetWorkQueue;
 using DotNetWorkQueue.Interceptors;
 using DotNetWorkQueue.Metrics.Net;
+using DotNetWorkQueue.Queue;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
@@ -49,6 +50,10 @@ namespace SampleShared
                 AddMessageInterceptors(container, enableEncryption, enableGzip);
             }
 
+#if NET8_0_OR_GREATER
+            if (_dashboardClient != null)
+                AddDashboardMetrics(container);
+#endif
         }
 
         public static void SetOptions(IContainer container, bool enableChaos)
@@ -165,6 +170,8 @@ namespace SampleShared
         }
 
 #if NET8_0_OR_GREATER
+        private static DashboardConsumerClient _dashboardClient;
+
         public static DashboardConsumerClient StartDashboardRegistration(string queueName, string friendlyName)
         {
             if (!SharedConfiguration.EnableDashboard)
@@ -179,14 +186,31 @@ namespace SampleShared
 
             var client = new DashboardConsumerClient(options);
             client.StartAsync().GetAwaiter().GetResult();
+            _dashboardClient = client;
             return client;
         }
 
         public static void StopDashboardRegistration(DashboardConsumerClient client)
         {
             if (client == null) return;
+            _dashboardClient = null;
             client.StopAsync().GetAwaiter().GetResult();
             client.Dispose();
+        }
+
+        public static void AddDashboardMetrics(IContainer container)
+        {
+            if (_dashboardClient != null)
+            {
+                var client = _dashboardClient;
+                container.Register<IConsumerMetricsNotification>(
+                    () => new ConsumerMetricsNotification(
+                        client.IncrementProcessed,
+                        client.IncrementErrored,
+                        client.IncrementRolledBack,
+                        client.IncrementPoisonMessage),
+                    LifeStyles.Singleton);
+            }
         }
 #endif
 
