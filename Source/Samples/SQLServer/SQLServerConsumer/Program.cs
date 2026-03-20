@@ -76,6 +76,7 @@ namespace SQLServerConsumer
                         queue.Configuration.SetUserParametersAndClause(() => Parameters(dayofWeek), WhereClause);
                     }
 
+                    queue.Configuration.History.Enabled = SharedConfiguration.EnableHistory;
                     queue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
                     Helpers.WaitForCancelKeyPress();
                 }

@@ -43,6 +43,7 @@ namespace PostgreSQLProducer
                         createQueue.Options.EnableMessageExpiration = true;
                         createQueue.Options.EnableStatus = true;
                         createQueue.Options.EnableStatusTable = true;
+                        createQueue.Options.EnableHistory = SharedConfiguration.EnableHistory;
                         var result = createQueue.CreateQueue();
                         log.Information(result.Status.ToString());
                     }

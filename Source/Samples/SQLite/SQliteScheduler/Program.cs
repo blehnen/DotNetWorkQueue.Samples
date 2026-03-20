@@ -44,6 +44,7 @@ namespace SQliteScheduler
                     createQueue.Options.EnableMessageExpiration = true;
                     createQueue.Options.EnableStatus = true;
                     createQueue.Options.EnableStatusTable = true;
+                    createQueue.Options.EnableHistory = SharedConfiguration.EnableHistory;
                     var result = createQueue.CreateJobSchedulerQueue(serviceRegister =>
                         Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "SQLiteScheduler", serviceRegister), queueConnection,
                         options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos), false);

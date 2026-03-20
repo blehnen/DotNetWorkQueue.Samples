@@ -41,6 +41,7 @@ namespace LiteDbScheduler
                     createQueue.Options.EnableDelayedProcessing = true;
                     createQueue.Options.EnableMessageExpiration = true;
                     createQueue.Options.EnableStatusTable = true;
+                    createQueue.Options.EnableHistory = SharedConfiguration.EnableHistory;
                     var result = createQueue.CreateJobSchedulerQueue(serviceRegister =>
                         Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "LiteDbScheduler", serviceRegister), queueConnection,
                         options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos), false);

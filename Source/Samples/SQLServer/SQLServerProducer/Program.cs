@@ -51,6 +51,7 @@ namespace SQLServerProducer
                         createQueue.Options.EnableMessageExpiration = true;
                         createQueue.Options.EnableStatus = true;
                         createQueue.Options.EnableStatusTable = true;
+                        createQueue.Options.EnableHistory = SharedConfiguration.EnableHistory;
 
                         if (!string.IsNullOrEmpty(enabledUserColumns) && bool.Parse(enabledUserColumns))
                         {

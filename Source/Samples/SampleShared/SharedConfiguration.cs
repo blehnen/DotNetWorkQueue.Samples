@@ -33,6 +33,10 @@ namespace SampleShared
             {
                 EnableDashboard = bool.Parse(oSettings["EnableDashboard"]);
             }
+            if (oSettings["EnableHistory"] != null)
+            {
+                EnableHistory = bool.Parse(oSettings["EnableHistory"]);
+            }
             if (oSettings["DashboardApiUrl"] != null)
             {
                 DashboardApiUrl = oSettings["DashboardApiUrl"];
@@ -47,6 +51,7 @@ namespace SampleShared
         public static bool EnableEncryption { get; }
         public static bool EnableChaos { get; }
         public static bool EnableDashboard { get; }
+        public static bool EnableHistory { get; }
         public static string DashboardApiUrl { get; } = "https://localhost:32906";
         #endregion
 
@@ -67,6 +72,8 @@ namespace SampleShared
                 sb.Append(EnableEncryption.ToString());
                 sb.Append(" Dashboard:");
                 sb.Append(EnableDashboard.ToString());
+                sb.Append(" History:");
+                sb.Append(EnableHistory.ToString());
                 return sb.ToString();
             }
         }

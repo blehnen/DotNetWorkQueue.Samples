@@ -89,6 +89,7 @@ namespace LiteDbProducerConsumer
                         createQueue.Options.EnableDelayedProcessing = true;
                         createQueue.Options.EnableMessageExpiration = true;
                         createQueue.Options.EnableStatusTable = true;
+                        createQueue.Options.EnableHistory = SharedConfiguration.EnableHistory;
                         var result = createQueue.CreateQueue();
                         log.Information(result.Status.ToString());
                     }
@@ -123,6 +124,7 @@ namespace LiteDbProducerConsumer
                         consumeQueue.Configuration.MessageExpiration.Enabled = true;
                         consumeQueue.Configuration.MessageExpiration.MonitorTime =
                             TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
+                        consumeQueue.Configuration.History.Enabled = SharedConfiguration.EnableHistory;
                         consumeQueue.Start<SimpleMessage>(MessageProcessing.HandleMessages, CreateNotifications.Create(log));
 
                         using (var queue = queueContainer.CreateProducer<SimpleMessage>(queueConnection))

@@ -41,6 +41,7 @@ namespace SQLServerScheduler
                     createQueue.Options.EnableMessageExpiration = false;
                     createQueue.Options.EnableStatus = true;
                     createQueue.Options.EnableStatusTable = true;
+                    createQueue.Options.EnableHistory = SharedConfiguration.EnableHistory;
                     var result = createQueue.CreateJobSchedulerQueue(serviceRegister =>
                         Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "SQLServerScheduler", serviceRegister), queueConnection,
                         options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos), false);

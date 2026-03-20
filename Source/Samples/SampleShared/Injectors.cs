@@ -60,6 +60,9 @@ namespace SampleShared
         {
             var pol = container.GetInstance<IPolicies>();
             pol.EnableChaos = enableChaos;
+
+            var history = container.GetInstance<IHistoryConfiguration>();
+            history.Enabled = SharedConfiguration.EnableHistory;
         }
 
         private static void AddMessageInterceptors(IContainer container,

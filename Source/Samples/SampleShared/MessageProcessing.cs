@@ -71,18 +71,14 @@ namespace SampleShared
             //allow canceling if the transport supports rolling back
             if (arg2.TransportSupportsRollback)
             {
-                //NOTE - there are two tokens
-                //Stop - the queue is asking you stop soon if possible. Eventually, the cancel token will be fired
-                //Cancel - the queue is requesting that you stop ASAP
-                //you can check either token or both
-                //to check both, create a composite toke
-                //https://docs.microsoft.com/en-us/dotnet/standard/threading/how-to-listen-for-multiple-cancellation-requests
-
+                //MessageCancellation.Token is linked to the worker-level tokens, so it fires when:
+                // - The worker is stopping (graceful shutdown)
+                // - A per-message cancel is requested (e.g. from the dashboard)
                 var canceled =
-                    arg2.WorkerStopping.StopWorkToken.WaitHandle.WaitOne(
+                    arg2.MessageCancellation.Token.WaitHandle.WaitOne(
                         TimeSpan.FromMilliseconds(arg1.Body.ProcessingTime));
 
-                if (canceled) throw new OperationCanceledException("We have been asked to stop working"); //force a requeue
+                if (canceled) throw new OperationCanceledException("Processing was canceled"); //force a requeue
             }
             else
                 System.Threading.Thread.Sleep(arg1.Body.ProcessingTime);
