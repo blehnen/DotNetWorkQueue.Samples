@@ -36,3 +36,9 @@
 - **Phase:** 2
 - **Status:** planned
 - **Message:** 5 plans in 1 wave (parallel): PLAN-1.1 Redis, PLAN-1.2 SQL Server, PLAN-1.3 PostgreSQL, PLAN-1.4 SQLite, PLAN-1.5 LiteDB. 36 .csproj bumps, 21 History.Enabled removals, 2 Redis EnableHistory additions. Critique: READY
+
+## 2026-03-26 — Phase 2 Build Complete
+
+- **Phase:** 2
+- **Status:** complete
+- **Message:** All 5 plans built and reviewed (all PASS). Verified: 36 .csproj at 0.9.11, 0 History.Enabled refs, Redis EnableHistory wired. Audit: pre-existing config issues only. Simplification: clean. CLAUDE.md updated to v0.9.11.
