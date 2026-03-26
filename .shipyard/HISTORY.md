@@ -18,3 +18,9 @@
 - **Phase:** 1
 - **Status:** ready
 - **Message:** Brainstorming complete — upgrade DotNetWorkQueue 0.9.10→0.9.11 (IHistoryConfiguration removal). 2-phase roadmap: Phase 1 fix SampleShared, Phase 2 update 36 transport projects
+
+## 2026-03-26 — Phase 1 Planned
+
+- **Phase:** 1
+- **Status:** planned
+- **Message:** 1 plan (PLAN-1.1), 1 wave, 1 task — remove IHistoryConfiguration from Injectors.SetOptions(). Critique verdict: READY
