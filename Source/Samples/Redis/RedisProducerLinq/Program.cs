@@ -30,6 +30,20 @@ namespace RedisProducerLinq
             var queueName = ConfigurationManager.AppSettings.ReadSetting("QueueName");
             var connectionString = ConfigurationManager.AppSettings.ReadSetting("Database");
             var queueConnection = new QueueConnection(queueName, connectionString);
+
+            //create the queue configuration (persists EnableHistory to Redis)
+            using (var createQueueContainer = new QueueCreationContainer<RedisQueueInit>(serviceRegister =>
+                Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "RedisProducer", serviceRegister),
+                options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
+            {
+                using (var createQueue =
+                    createQueueContainer.GetQueueCreation<RedisQueueCreation>(queueConnection))
+                {
+                    createQueue.Options.EnableHistory = SharedConfiguration.EnableHistory;
+                    createQueue.CreateQueue();
+                }
+            }
+
             //create the producer
             using (var queueContainer = new QueueContainer<RedisQueueInit>(serviceRegister =>
                 Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "RedisProducer", serviceRegister)

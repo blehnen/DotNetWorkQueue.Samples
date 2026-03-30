@@ -11,8 +11,8 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue" Version="0.9.10" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SqlServer" Version="0.9.10" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.9.13" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SqlServer" Version="0.9.13" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
@@ -80,7 +80,7 @@
 		<Reference Include="System.Net.Http" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-		<PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.10" />
+		<PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.13" />
 	</ItemGroup>
   <ItemGroup>
     <None Include="tracesettings.json">

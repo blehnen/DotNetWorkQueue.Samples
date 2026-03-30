@@ -72,7 +72,6 @@ namespace RedisConsumerLinq
                             queue.Configuration.MessageExpiration.Enabled = true;
                             queue.Configuration.MessageExpiration.MonitorTime =
                                 TimeSpan.FromSeconds(20); //check for expired messages every 20 seconds
-                            queue.Configuration.History.Enabled = SharedConfiguration.EnableHistory;
                             queue.Start(CreateNotifications.Create(log));
                             Helpers.WaitForCancelKeyPress();
 
