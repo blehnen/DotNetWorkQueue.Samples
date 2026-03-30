@@ -35,7 +35,7 @@ namespace IntegrationTests
         /// <summary>
         /// Full produce-consume round-trip test.
         /// </summary>
-        public void RunTest<TInit, TCreation>(Action<TCreation> configureQueueOptions)
+        public void RunTest<TInit, TCreation>(Action<TCreation> configureQueueOptions, Func<IAdditionalMessageData> createMessageData = null)
             where TInit : class, ITransportInit, new()
             where TCreation : class, IQueueCreation
         {
@@ -86,7 +86,11 @@ namespace IntegrationTests
                     for (int i = 0; i < _messageCount; i++)
                     {
                         var message = Messages.CreateSimpleMessage(10, 0);
-                        var sendResult = queue.Send(message);
+                        IQueueOutputMessage sendResult;
+                        if (createMessageData != null)
+                            sendResult = queue.Send(message, createMessageData());
+                        else
+                            sendResult = queue.Send(message);
                         Assert.IsFalse(sendResult.HasError,
                             $"Send failed for message {i}: {sendResult.SendingException?.Message}");
                     }

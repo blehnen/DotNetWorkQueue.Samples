@@ -2,6 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using DotNetWorkQueue;
+using DotNetWorkQueue.Messages;
+using DotNetWorkQueue.Transport.SqlServer;
 using DotNetWorkQueue.Transport.SqlServer.Basic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -36,6 +39,11 @@ namespace IntegrationTests
                 createQueue.Options.EnableStatus = true;
                 createQueue.Options.EnableStatusTable = true;
                 createQueue.Options.EnableHistory = false;
+            }, () =>
+            {
+                var data = new AdditionalMessageData();
+                data.SetExpiration(TimeSpan.FromDays(1));
+                return data;
             });
         }
 
