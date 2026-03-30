@@ -56,7 +56,7 @@ SQLite and LiteDb tests run in GitHub Actions. Redis, SQL Server, and PostgreSQL
 | Feature | Config file | Backend |
 |---------|-------------|---------|
 | Tracing | `tracesettings.json` | [Jaeger](https://www.jaegertracing.io/download/) |
-| Metrics | `metricsettings.json` | InfluxDB |
+| Metrics | `metricsettings.json` | [InfluxDB](https://www.influxdata.com/products/influxdb/) |
 
 Both can be enabled/disabled in `App.config`. Point the JSON config files at your instances.
 
