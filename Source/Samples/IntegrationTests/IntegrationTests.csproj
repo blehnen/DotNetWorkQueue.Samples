@@ -13,6 +13,11 @@
     <PackageReference Include="DotNetWorkQueue" Version="0.9.13" />
     <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.13" Condition=" '$(TargetFramework)' != 'net48' " />
     <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.13" />
+    <PackageReference Include="DotNetWorkQueue.Transport.LiteDb" Version="0.9.13" />
+    <PackageReference Include="DotNetWorkQueue.Transport.Redis" Version="0.9.13" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SqlServer" Version="0.9.13" />
+    <PackageReference Include="DotNetWorkQueue.Transport.PostgreSQL" Version="0.9.13" />
+    <PackageReference Include="Npgsql" Version="8.0.8" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
