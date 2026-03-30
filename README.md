@@ -34,6 +34,23 @@ Sample applications for [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQ
 | Samples | `App.config` | Connection string, queue name, GZIP, encryption, tracing, and metrics toggles |
 | Dashboard.Api | `appsettings.json` | Connection strings and queue names (see `appsettings.example.json`). Swagger at `/swagger` |
 
+## Integration tests
+
+Produce-consume round-trip tests for each transport. Catches DI wiring breaks without manual testing.
+
+```bash
+# Build SampleShared first
+dotnet build "Source/Samples/SampleShared/SampleShared.sln" -c Debug
+
+# SQLite + LiteDb only (no external services needed)
+dotnet test "Source/Samples/IntegrationTests/IntegrationTests.sln" -c Debug --filter "TestCategory=CI"
+
+# All transports (needs Redis, SQL Server, PostgreSQL)
+dotnet test "Source/Samples/IntegrationTests/IntegrationTests.sln" -c Debug
+```
+
+SQLite and LiteDb tests run in GitHub Actions. Redis, SQL Server, and PostgreSQL tests are local-only -- they read connection strings from each transport's sample `App.config`.
+
 ## Observability
 
 | Feature | Config file | Backend |
