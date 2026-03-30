@@ -17,15 +17,7 @@ Sample applications for [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQ
 | SchedulerConsumer | Scheduler + consumer |
 | Dashboard.Api | Queue monitoring API (ASP.NET Core, net8.0 only) |
 
-## Transports
-
-| Transport |
-|-----------|
-| Redis |
-| SQL Server |
-| SQLite |
-| PostgreSQL |
-| LiteDB |
+**Transports:** Redis, SQL Server, SQLite, PostgreSQL, LiteDB
 
 ## Configuration
 
