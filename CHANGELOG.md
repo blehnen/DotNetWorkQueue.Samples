@@ -1,5 +1,13 @@
 # Changelog
 
+### 2026-03-30
+- Update all DotNetWorkQueue.* packages to 0.9.13
+- Add MSTest integration test project verifying produce-consume round-trips for all 5 transports
+- SQLite and LiteDb tests run in CI; Redis, SQL Server, PostgreSQL tests are local-only
+
+### 2026-03-27
+- Update all DotNetWorkQueue.* packages to 0.9.11
+
 ### 2026-03-20
 - Update all DotNetWorkQueue.* packages to 0.9.10
 - Add message history support: `EnableHistory` setting in App.config, queue creation options, and consumer/producer configuration

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.0) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer).
+Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.13) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer).
 
 ## Build Commands
 
@@ -54,7 +54,7 @@ Each sample executable has:
 
 ### Key Dependencies
 
-- **DotNetWorkQueue** v0.9.0 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`)
+- **DotNetWorkQueue** v0.9.13 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`)
 - **OpenTelemetry** v1.14.0 (tracing via Jaeger)
 - **App.Metrics** v4.3.0 (metrics via InfluxDB)
 - **Serilog** v4.3.0 (logging)

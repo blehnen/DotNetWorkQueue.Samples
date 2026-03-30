@@ -63,3 +63,12 @@ jobs:
 
       - name: Build DashBoard.Api
         run: dotnet build "Source\Samples\DashBoard.Api\DashBoard.Api.sln" -c Debug --no-restore
+
+      - name: Restore IntegrationTests
+        run: dotnet restore "Source\Samples\IntegrationTests\IntegrationTests.sln"
+
+      - name: Build IntegrationTests
+        run: dotnet build "Source\Samples\IntegrationTests\IntegrationTests.sln" -c Debug --no-restore
+
+      - name: Run Integration Tests (CI category)
+        run: dotnet test "Source\Samples\IntegrationTests\IntegrationTests.sln" -c Debug --no-build --filter "TestCategory=CI" -v normal
