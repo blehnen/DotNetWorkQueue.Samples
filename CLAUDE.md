@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.13) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer).
+Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.14) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer).
 
 ## Build Commands
 
@@ -31,7 +31,19 @@ dotnet restore "Source/Samples/DashBoard.Api/DashBoard.Api.sln"
 dotnet build "Source/Samples/DashBoard.Api/DashBoard.Api.sln" -c Debug
 ```
 
-There are no tests in this repository — it is a samples-only project.
+## Integration Tests
+
+MSTest integration tests verify produce-consume round-trips for all 5 transports.
+
+```bash
+# Build SampleShared first, then run CI-safe tests (SQLite + LiteDb)
+dotnet build "Source/Samples/SampleShared/SampleShared.sln" -c Debug
+dotnet build "Source/Samples/IntegrationTests/IntegrationTests.sln" -c Debug
+dotnet test "Source/Samples/IntegrationTests/IntegrationTests.sln" -c Debug --filter "TestCategory=CI"
+
+# All transports (needs Redis, SQL Server, PostgreSQL)
+dotnet test "Source/Samples/IntegrationTests/IntegrationTests.sln" -c Debug
+```
 
 ## Architecture
 
@@ -54,7 +66,7 @@ Each sample executable has:
 
 ### Key Dependencies
 
-- **DotNetWorkQueue** v0.9.13 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`)
+- **DotNetWorkQueue** v0.9.14 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`, `DotNetWorkQueue.Dashboard.Ui`)
 - **OpenTelemetry** v1.14.0 (tracing via Jaeger)
 - **App.Metrics** v4.3.0 (metrics via InfluxDB)
 - **Serilog** v4.3.0 (logging)
@@ -63,4 +75,5 @@ Each sample executable has:
 
 ## CI
 
-AppVeyor is used for CI (`appveyor.yml`). It restores and builds all 7 solutions (including DashBoard.Api) in Debug configuration using Visual Studio 2022.
+- **Jenkins** (`Jenkinsfile`) — Linux/Docker, net10.0. Builds all solutions, runs CI integration tests (SQLite + LiteDb), then runs LocalOnly tests in parallel (PostgreSQL, SQL Server, Redis) with injected credentials. Uses the same `docker` agent label and credential IDs as the core DotNetWorkQueue project.
+- **GitHub Actions** (`.github/workflows/ci.yml`) — Windows, net8.0. Builds all solutions and runs CI-category integration tests. Serves as a .NET 8.0 / Windows compatibility check.

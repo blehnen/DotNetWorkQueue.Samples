@@ -52,7 +52,7 @@ namespace SampleShared
         public static bool EnableChaos { get; }
         public static bool EnableDashboard { get; }
         public static bool EnableHistory { get; }
-        public static string DashboardApiUrl { get; } = "https://localhost:32906";
+        public static string DashboardApiUrl { get; } = "http://192.168.0.2:9998";
         #endregion
 
         public static string AllSettings

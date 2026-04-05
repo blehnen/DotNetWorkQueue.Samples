@@ -1,5 +1,10 @@
 # Changelog
 
+### 2026-04-03
+- Update all DotNetWorkQueue.* packages to 0.9.14
+- Simplify Dashboard.Api to use new `IConfiguration` overload for transport registration (replaces manual `AddConnectionByTransport` switch)
+- Remove unused SampleShared reference from Dashboard.Api
+
 ### 2026-03-30
 - Update all DotNetWorkQueue.* packages to 0.9.13
 - Add MSTest integration test project verifying produce-consume round-trips for all 5 transports
