@@ -51,18 +51,6 @@ namespace SampleShared
             }
         }
 
-#if net48
-        public static IEnumerable<IQueueOutputMessage> RunDynamic(IProducerMethodQueue queue, int count, Func<IAdditionalMessageData> expiredDataFuture)
-        {
-            for (var i = 0; i < count; i++)
-            {
-                yield return queue.Send(new LinqExpressionToRun(
-                    "(message, workerNotification) => new SampleShared.TestClass().RunMe((IWorkerNotification)workerNotification, \"dynamic\", 2, new SampleShared.SomeInput(DateTime.UtcNow.ToString()))",
-                    new List<string> { "SampleShared.dll" }, //additional references
-                    new List<string> { "SampleShared" }), expiredDataFuture.Invoke()); //additional using statements
-            }
-        }
-#endif
         public static async Task<List<IQueueOutputMessage>> RunStaticAsync(IProducerMethodQueue queue, int count, Func<IAdditionalMessageData> expiredDataFuture)
         {
             var results = new List<IQueueOutputMessage>(count);
@@ -78,23 +66,6 @@ namespace SampleShared
 
             return results;
         }
-
-#if net48
-        public static async Task<List<IQueueOutputMessage>> RunDynamicAsync(IProducerMethodQueue queue, int count, Func<IAdditionalMessageData> expiredDataFuture)
-        {
-            var results = new List<IQueueOutputMessage>(count);
-            for (var i = 0; i < count; i++)
-            {
-                var result = await queue.SendAsync(new LinqExpressionToRun(
-                    "(message, workerNotification) => new SampleShared.TestClass().RunMe((IWorkerNotification)workerNotification, \"dynamic\", 2, new SampleShared.SomeInput(DateTime.UtcNow.ToString()))",
-                    new List<string> { "SampleShared.dll" }, //additional references
-                    new List<string> { "SampleShared" }), expiredDataFuture.Invoke()); //additional using statements
-                results.Add(result);
-            }
-
-            return results;
-        }
-#endif
 
         public static async Task<List<IQueueOutputMessage>> RunAsync(IProducerQueue<SimpleMessage> queue, SimpleMessage message, IAdditionalMessageData data)
         {
@@ -147,11 +118,9 @@ To test rollbacks, cancel the consumer by pressing any button. Easier to test wi
 
 Sync
 a) Send 1 static job
-b) Send 1 dynamic job (full framework only)
 
 Async
 c) Send 1 static job
-d) Send 1 dynamic job (full framework only)
 
 q) Quit");
                 var key = char.ToLower(Console.ReadKey(true).KeyChar);
@@ -160,19 +129,9 @@ q) Quit");
                     case 'a':
                         HandleResults.Handle(RunStatic(queue, 1, expiredDataFuture), Log.Logger);
                         break;
-#if net48
-                    case 'b':
-                        HandleResults.Handle(RunDynamic(queue, 1, expiredDataFuture), Log.Logger);
-                        break;
-#endif
                     case 'c':
                         HandleResults.Handle(RunStaticAsync(queue, 1, expiredDataFuture).Result, Log.Logger);
                         break;
-#if net48
-                    case 'd':
-                        HandleResults.Handle(RunDynamicAsync(queue, 1, expiredDataFuture).Result, Log.Logger);
-                        break;
-#endif
                     case 'q':
                         Console.WriteLine("Quitting");
                         keepRunning = false;
