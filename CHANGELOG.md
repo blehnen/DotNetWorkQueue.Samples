@@ -1,5 +1,19 @@
 # Changelog
 
+### 2026-04-10 — DotNetWorkQueue 0.9.31 upgrade
+
+- Upgrade every sample project from DotNetWorkQueue 0.9.14 (core and transports) and 0.9.16 (Dashboard) to **0.9.31**.
+- Drop `net48` targeting from all samples; every sample executable, `SampleShared`, `DashBoard.Api`, and `IntegrationTests` now targets **net10.0** only. Required by DotNetWorkQueue 0.9.19, which dropped net48 and netstandard2.0.
+- Remove the `#if net48` dynamic-LINQ helpers (`RunDynamic`, `RunDynamicAsync`) and their `RunLoop` dispatch cases from `SampleShared/RunProducer.cs`. Dynamic LINQ (JpLabs.DynamicCode) was removed from the library in 0.9.19 — it was net48-only. Static method LINQ samples are unaffected.
+- Convert every Schyntax schedule string to 6-field cron (Cronos), as required by 0.9.30:
+  - `sec(*%10)` → `*/10 * * * * *` (heartbeats across 22 files)
+  - `sec(0,5,10,15,20,25,30,35,40,45,50,55)` → `*/5 * * * * *`
+  - `min(*)` → `0 * * * * *`
+  - `sec(30)` → `30 * * * * *`
+- Migrate `DashBoard.Api` to the 0.9.31 multi-source dashboard config shape:
+  - `Program.cs` rewritten to mirror the canonical `DotNetWorkQueue.Dashboard.Ui/Program.cs`, using `DashboardConfigParser.ValidateNoLegacyConfig`, `SourceRegistry`, `MultiSourceDashboardApiClient`, `SourceHealthMonitor`, per-source `HttpClient`, and `LocalSourceHostedService` for self-contained mode.
+  - `appsettings.json` / `appsettings.example.json` now use top-level `DashboardApi:Sources[]` and `DashboardAuth`. The former nested `Dashboard:Auth` section is gone.
+
 ### 2026-04-03
 - Update all DotNetWorkQueue.* packages to 0.9.14
 - Simplify Dashboard.Api to use new `IConfiguration` overload for transport registration (replaces manual `AddConnectionByTransport` switch)
