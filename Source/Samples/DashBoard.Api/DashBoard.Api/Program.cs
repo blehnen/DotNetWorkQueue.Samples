@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,27 +18,69 @@ Log.Logger = new LoggerConfiguration()
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
-// --- Dashboard API (self-contained: reads connections, interceptors, API key from config) ---
-var dashboardSection = builder.Configuration.GetSection("Dashboard");
-builder.Services.AddDotNetWorkQueueDashboard(dashboardSection);
-
-// --- Dashboard UI (Blazor Server) ---
+// --- Razor / Blazor / MudBlazor services ---
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddMudServices();
 
+// --- Self-contained mode: embed Dashboard API in this process ---
+var dashboardSection = builder.Configuration.GetSection("Dashboard");
+var selfContained = dashboardSection.GetSection("Connections").GetChildren().Any();
+if (selfContained)
+{
+    builder.Services.AddDotNetWorkQueueDashboard(dashboardSection);
+}
+
+// --- Multi-source Dashboard API client registration (0.9.31+) ---
+DashboardConfigParser.ValidateNoLegacyConfig(builder.Configuration);
+var sources = DashboardConfigParser.ParseSources(builder.Configuration);
+
+// In self-contained mode, auto-add a "Local" source if one is not already configured
+if (selfContained && sources.All(s => !string.Equals(s.Name, "Local", StringComparison.OrdinalIgnoreCase)))
+{
+    var localName = builder.Configuration["DashboardApi:LocalSourceName"] ?? "Local";
+    sources.Add(new DashboardApiSourceConfig { Name = localName, BaseUrl = "http://localhost:5000" });
+    builder.Services.AddHostedService<LocalSourceHostedService>();
+}
+
+// Default fallback: if no sources configured at all, add a default Local source
+if (sources.Count == 0)
+{
+    sources.Add(new DashboardApiSourceConfig { Name = "Local", BaseUrl = "http://localhost:5000" });
+}
+
+var registry = new SourceRegistry(sources);
+builder.Services.AddSingleton<ISourceRegistry>(registry);
+
+foreach (var source in sources)
+{
+    builder.Services.AddHttpClient(source.Slug, client =>
+    {
+        client.BaseAddress = new Uri(source.BaseUrl);
+        if (!string.IsNullOrEmpty(source.ApiKey))
+            client.DefaultRequestHeaders.Add("X-Api-Key", source.ApiKey);
+    });
+}
+
+builder.Services.AddSingleton<IMultiSourceDashboardApiClient, MultiSourceDashboardApiClient>();
+
+// --- Health monitoring ---
+builder.Services.AddSingleton<ISourceHealthMonitor, SourceHealthMonitor>();
+builder.Services.AddHostedService(sp => (SourceHealthMonitor)sp.GetRequiredService<ISourceHealthMonitor>());
+
 // --- Authentication ---
-var authSection = dashboardSection.GetSection("Auth");
-var authUsername = authSection.GetValue<string>("Username") ?? "";
-var authPasswordHash = authSection.GetValue<string>("PasswordHash") ?? "";
+var authUsername = builder.Configuration["DashboardAuth:Username"] ?? "";
+var authPasswordHash = builder.Configuration["DashboardAuth:PasswordHash"] ?? "";
+var authEnabled = authUsername.Length > 0 && authPasswordHash.Length > 0;
 
 var authConfig = new DashboardAuthConfig
 {
-    IsEnabled = !string.IsNullOrEmpty(authUsername),
+    IsEnabled = authEnabled,
     Username = authUsername,
     PasswordHash = authPasswordHash
 };
 builder.Services.AddSingleton(authConfig);
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -45,30 +88,38 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
     });
 
-// HttpClient that points back to this same host for API calls
-var apiKey = dashboardSection.GetValue<string>("ApiKey") ?? "";
-var appUrl = builder.Configuration["ASPNETCORE_URLS"]
-             ?? "http://192.168.0.2:9998";
-var baseUrl = appUrl.Split(';')[0].Trim();
-
-builder.Services.AddHttpClient<IDashboardApiClient, DashboardApiClient>(client =>
+if (!string.IsNullOrEmpty(authUsername) && string.IsNullOrEmpty(authPasswordHash))
 {
-    client.BaseAddress = new Uri(baseUrl);
-    if (!string.IsNullOrEmpty(apiKey))
-        client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
-});
+    Log.Warning("DashboardAuth:Username is set but DashboardAuth:PasswordHash is empty. Authentication is DISABLED until a password hash is configured.");
+    Log.Warning("Generate a SHA256 hash via: echo -n 'yourpassword' | sha256sum | cut -d' ' -f1");
+}
 
 var app = builder.Build();
 
-// --- Middleware ---
-app.UseDotNetWorkQueueDashboard();
-app.UseAuthentication();
-app.MapControllers();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+}
 
-// --- Login / Logout endpoints ---
+if (selfContained)
+{
+    app.UseDotNetWorkQueueDashboard();
+}
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAntiforgery();
+app.UseStaticFiles();
+
+if (selfContained)
+{
+    app.MapControllers();
+}
+
+// --- Login / Logout endpoints (sample-specific cookie auth) ---
 app.MapPost("/auth/login", async (HttpContext ctx) =>
 {
-    var form = await ctx.Request.ReadFormAsync();
+    var form = await ctx.Request.ReadFormAsync().ConfigureAwait(false);
     var username = form["username"].ToString();
     var password = form["password"].ToString();
 
@@ -79,7 +130,7 @@ app.MapPost("/auth/login", async (HttpContext ctx) =>
     {
         var claims = new List<Claim> { new(ClaimTypes.Name, username) };
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+        await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity)).ConfigureAwait(false);
         ctx.Response.Redirect("/");
     }
     else
@@ -90,17 +141,12 @@ app.MapPost("/auth/login", async (HttpContext ctx) =>
 
 app.MapGet("/auth/logout", async (HttpContext ctx) =>
 {
-    await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
     ctx.Response.Redirect("/login");
 });
 
-// --- UI middleware ---
-app.UseStaticFiles();
-app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 Log.Information("Dashboard API + UI starting...");
-Log.Information("Swagger: {Url}/swagger", baseUrl);
-Log.Information("Dashboard UI: {Url}", baseUrl);
 app.Run();
