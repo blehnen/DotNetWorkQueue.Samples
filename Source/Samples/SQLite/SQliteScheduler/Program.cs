@@ -93,21 +93,21 @@ q) Quit");
                                 case 'a':
                                     job1 = scheduler.AddUpdateJob<SqLiteMessageQueueInit, SqliteJobQueueCreation>("test job1",
                                         queueConnection,
-                                        "sec(0,5,10,15,20,25,30,35,40,45,50,55)",
+                                        "*/5 * * * * *",
                                         (message, workerNotification) => Console.WriteLine("test job1 " + message.MessageId.Id.Value));
                                     log.Information("job scheduled");
                                     break;
                                 case 'b':
                                     job2 = scheduler.AddUpdateJob<SqLiteMessageQueueInit, SqliteJobQueueCreation>("test job2",
                                        queueConnection,
-                                        "min(*)",
+                                        "0 * * * * *",
                                         (message, workerNotification) => Console.WriteLine("test job2 " + message.MessageId.Id.Value));
                                     log.Information("job scheduled");
                                     break;
                                 case 'c':
                                     job3 = scheduler.AddUpdateJob<SqLiteMessageQueueInit, SqliteJobQueueCreation>("test job3",
                                         queueConnection,
-                                        "sec(30)",
+                                        "30 * * * * *",
                                         (message, workerNotification) => Console.WriteLine("test job3 " + message.MessageId.Id.Value));
                                     log.Information("job scheduled");
                                     break;

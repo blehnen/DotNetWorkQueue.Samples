@@ -58,7 +58,7 @@ namespace SQLServerConsumer
                 {
                     //set some processing options and start looking for work
                     queue.Configuration.Worker.WorkerCount = 4; //lets run 4 worker threads
-                    queue.Configuration.HeartBeat.UpdateTime = "sec(*%10)"; //set a heartbeat every 10 seconds
+                    queue.Configuration.HeartBeat.UpdateTime = "*/10 * * * * *"; //set a heartbeat every 10 seconds
                     queue.Configuration.HeartBeat.MonitorTime = TimeSpan.FromSeconds(15); //check for dead records every 15 seconds
                     queue.Configuration.HeartBeat.Time = TimeSpan.FromSeconds(35); //records with no heartbeat after 35 seconds are considered dead
 

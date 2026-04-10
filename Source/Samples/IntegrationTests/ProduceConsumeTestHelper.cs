@@ -116,7 +116,7 @@ namespace IntegrationTests
                 using (var queue = queueContainer.CreateConsumer(queueConnection))
                 {
                     queue.Configuration.Worker.WorkerCount = 1;
-                    queue.Configuration.HeartBeat.UpdateTime = "sec(*%10)";
+                    queue.Configuration.HeartBeat.UpdateTime = "*/10 * * * * *";
                     queue.Configuration.HeartBeat.MonitorTime = TimeSpan.FromSeconds(15);
                     queue.Configuration.HeartBeat.Time = TimeSpan.FromSeconds(35);
                     queue.Configuration.MessageExpiration.Enabled = true;

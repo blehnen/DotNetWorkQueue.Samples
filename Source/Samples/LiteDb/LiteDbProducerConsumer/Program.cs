@@ -109,7 +109,7 @@ namespace LiteDbProducerConsumer
                         //set some processing options and start looking for work
                         consumeQueue.Configuration.Worker.WorkerCount = 4; //lets run 4 worker threads
                         consumeQueue.Configuration.HeartBeat.UpdateTime =
-                            "sec(*%10)"; //set a heartbeat every 10 seconds
+                            "*/10 * * * * *"; //set a heartbeat every 10 seconds
                         consumeQueue.Configuration.HeartBeat.MonitorTime =
                             TimeSpan.FromSeconds(15); //check for dead records every 15 seconds
                         consumeQueue.Configuration.HeartBeat.Time =

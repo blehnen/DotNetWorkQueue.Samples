@@ -70,7 +70,7 @@ namespace PostGreSQLConsumerAsync
                             //in the async model, the worker count is how many threads are querying the queue - the scheduler runs the work
                             queue.Configuration.Worker.WorkerCount = 1; //lets just run 1 thread that queries the database
 
-                            queue.Configuration.HeartBeat.UpdateTime = "sec(*%10)"; //set a heartbeat every 10 seconds
+                            queue.Configuration.HeartBeat.UpdateTime = "*/10 * * * * *"; //set a heartbeat every 10 seconds
                             queue.Configuration.HeartBeat.MonitorTime =
                                 TimeSpan.FromSeconds(15); //check for dead records every 15 seconds
                             queue.Configuration.HeartBeat.Time =
