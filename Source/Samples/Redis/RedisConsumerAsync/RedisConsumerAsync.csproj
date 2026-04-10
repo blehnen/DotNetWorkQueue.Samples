@@ -46,7 +46,6 @@
 		<PackageReference Include="SimpleInjector" Version="5.5.0" />
 		<PackageReference Include="StackExchange.Redis" Version="2.10.1" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.1" />
-		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="10.0.1" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.31" />
