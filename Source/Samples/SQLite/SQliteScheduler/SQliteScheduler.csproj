@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-     <TargetFrameworks>net8.0;net48</TargetFrameworks>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -11,8 +10,8 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue" Version="0.9.14" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.14" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.9.31" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.31" />
     <PackageReference Include="Jaeger.Thrift" Version="0.3.7" />
     <PackageReference Include="Jaeger.Thrift.VendoredThrift" Version="0.3.7" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.1" />
@@ -105,19 +104,9 @@
     <PackageReference Include="System.Xml.ReaderWriter" Version="4.3.1" />
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
   </ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
-    <Reference Include="SampleShared, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\SampleShared\bin\Debug\net48\SampleShared.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Data.DataSetExtensions" />
-  </ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+	<ItemGroup>
 		<Reference Include="SampleShared">
-			<HintPath>..\..\SampleShared\bin\Debug\net8.0\SampleShared.dll</HintPath>
+			<HintPath>..\..\SampleShared\bin\Debug\net10.0\SampleShared.dll</HintPath>
 		</Reference>
 		<Reference Include="System.ComponentModel.Composition" />
 		<Reference Include="System.ComponentModel.DataAnnotations" />
@@ -125,8 +114,8 @@
 		<Reference Include="System.Runtime.Remoting" />
 		<Reference Include="System.Data.DataSetExtensions" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-		<PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.14" />
+	<ItemGroup>
+		<PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.31" />
 	</ItemGroup>
   <ItemGroup>
     <None Include="tracesettings.json">
