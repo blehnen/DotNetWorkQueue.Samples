@@ -15,7 +15,7 @@ Sample applications for [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQ
 | ConsumerLinq | Process LINQ expressions |
 | Scheduler | Recurring jobs |
 | SchedulerConsumer | Scheduler + consumer |
-| Dashboard.Api | Queue monitoring API (ASP.NET Core, net8.0 only) |
+| Dashboard.Api | Queue monitoring API (ASP.NET Core) |
 
 **Transports:** Redis, SQL Server, SQLite, PostgreSQL, LiteDB
 
