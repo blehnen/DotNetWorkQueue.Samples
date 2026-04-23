@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.31) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer).
+Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.35) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer).
 
 ## Build Commands
 
@@ -55,7 +55,7 @@ All projects target **net10.0** only. Starting with DotNetWorkQueue 0.9.19, the 
 
 - **`Source/Samples/SampleShared/`** — Shared library containing common logic used by all samples: message factories, shared configuration reader, DI/metrics/tracing injectors, producer run loops, and message processing handlers.
 - **`Source/Samples/{Transport}/`** — Each transport folder contains a `Samples.sln` and 7 executable projects following the same naming pattern (e.g., `RedisProducer`, `RedisConsumerAsync`, `RedisScheduler`).
-- **`Source/Samples/DashBoard.Api/`** — Standalone ASP.NET Core Dashboard API + UI host (net10.0) that demonstrates the 0.9.31 multi-source dashboard config shape. Reads `Dashboard:Connections` for self-contained API mode and `DashboardApi:Sources[]` for multi-source UI routing. Uses `appsettings.json` for configuration. No SampleShared dependency.
+- **`Source/Samples/DashBoard.Api/`** — Standalone ASP.NET Core Dashboard API + UI host (net10.0) that demonstrates the 0.9.35 multi-source dashboard config shape. Reads `Dashboard:Connections` for self-contained API mode and `DashboardApi:Sources[]` for multi-source UI routing. Uses `appsettings.json` for configuration. No SampleShared dependency.
 
 ### Configuration
 
@@ -66,7 +66,7 @@ Each sample executable has:
 
 ### Key Dependencies
 
-- **DotNetWorkQueue** v0.9.31 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`, `DotNetWorkQueue.Dashboard.Ui`)
+- **DotNetWorkQueue** v0.9.35 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`, `DotNetWorkQueue.Dashboard.Ui`)
 - **OpenTelemetry** v1.14.0 (tracing via Jaeger)
 - **App.Metrics** v4.3.0 (metrics via InfluxDB)
 - **Serilog** v4.3.0 (logging)
