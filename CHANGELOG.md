@@ -1,5 +1,17 @@
 # Changelog
 
+### 2026-04-23 — DotNetWorkQueue 0.9.35 upgrade
+
+- Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.31** to **0.9.35** across 39 csproj files.
+- Align explicit transitive pins with what the 0.9.35 dependency tree requires (NU1605 avoidance):
+  - `Microsoft.Extensions.*` 10.0.1 → **10.0.7** (17 packages)
+  - `OpenTelemetry.*` 1.14.0 → **1.15.3** (4 packages)
+  - `StackExchange.Redis` 2.10.1 → **2.12.14**
+  - `Npgsql` 8.0.8 → **10.0.2**
+  - `MudBlazor` 9.1.0 → **9.3.0**
+  - `SimpleInjector` 5.5.0 → **5.5.1**
+- Verified with clean restore + build across SampleShared, all 5 transport solutions, Dashboard.Api, and IntegrationTests (0 warnings, 0 errors). CI-category integration tests pass on SQLite + LiteDb.
+
 ### 2026-04-10 — DotNetWorkQueue 0.9.31 upgrade
 
 - Upgrade every sample project from DotNetWorkQueue 0.9.14 (core and transports) and 0.9.16 (Dashboard) to **0.9.31**.
