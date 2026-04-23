@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.35) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer).
 
+## Release discipline
+
+**When bumping `DotNetWorkQueue.*` package versions (or any transitive pins that come along for the ride), always add a dated entry to `CHANGELOG.md` in the same commit/session.** Also update the `v0.9.xx` reference in the Project Overview above and the dependency list under Architecture → Key Dependencies.
+
 ## Build Commands
 
 **SampleShared must be built first** — all other projects reference its compiled DLL via HintPath, not as a ProjectReference.
