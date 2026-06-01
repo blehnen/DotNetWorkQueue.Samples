@@ -53,6 +53,15 @@ namespace IntegrationTests
         /// <summary>DELETE ... WHERE OrderId = @OrderId</summary>
         protected abstract string DeleteProjectionRowByOrderIdSql { get; }
 
+        /// <summary>
+        /// Sets the message expiration on the supplied IAdditionalMessageData. SetExpiration is a
+        /// TRANSPORT-SPECIFIC extension (lives in DotNetWorkQueue.Transport.SqlServer / .PostgreSQL),
+        /// so this base — which can't import a transport namespace — delegates to the subclass.
+        /// Implementations should call data.SetExpiration(TimeSpan.FromDays(1)) or similar; the
+        /// queue was created with EnableMessageExpiration = true and the MetaData table requires it.
+        /// </summary>
+        protected abstract void ConfigureSeedExpiration(IAdditionalMessageData data);
+
         // NOTE: no InsertProjectionRowSql — the handler INSERTs on the library-supplied tx.
 
         // ---- Public API ------------------------------------------------------------------
@@ -141,11 +150,11 @@ namespace IntegrationTests
                 using (var queue = queueContainer.CreateProducer<OrderCreatedEvent>(queueConnection))
                 {
                     // The queue was created with EnableMessageExpiration = true, so the MetaData
-                    // table's ExpirationTime column is NOT NULL. The producer must supply an
-                    // expiration via IAdditionalMessageData or the INSERT fails. Match the pattern
-                    // used by LiteDbProducer.ExpiredDataFuture.
+                    // table's ExpirationTime column is NOT NULL. The producer must supply expiration
+                    // via IAdditionalMessageData or the INSERT fails. SetExpiration is transport-
+                    // specific (per-transport extension namespace), so the subclass supplies it.
                     var data = new AdditionalMessageData();
-                    data.SetExpiration(TimeSpan.FromDays(1));
+                    ConfigureSeedExpiration(data);
                     IQueueOutputMessage result = queue.Send(msg, data);
                     Assert.IsFalse(result.HasError, $"Seed failed: {result.SendingException?.Message}");
                 }

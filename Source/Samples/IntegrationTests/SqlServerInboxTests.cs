@@ -28,6 +28,9 @@ namespace IntegrationTests
 
         protected override string DeleteProjectionRowByOrderIdSql =>
             "DELETE FROM [dbo].[OrdersProjection] WHERE [OrderId] = @OrderId";
+
+        protected override void ConfigureSeedExpiration(IAdditionalMessageData data) =>
+            data.SetExpiration(TimeSpan.FromDays(1));
     }
 
     [TestClass]
