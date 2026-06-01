@@ -10,9 +10,11 @@ Sample applications for [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQ
 |--------|-------------|
 | Producer | Queue messages |
 | ProducerLinq | Queue LINQ expressions |
+| ProducerOutbox | Transactional outbox — send inside a caller-supplied DbTransaction (SQL Server + PostgreSQL) |
 | Consumer | Dedicated processing threads |
 | ConsumerAsync | Dedicated reader + separate processing thread pool |
 | ConsumerLinq | Process LINQ expressions |
+| ConsumerInbox | Inbox pattern — business write joins the dequeue transaction atomically (SQL Server + PostgreSQL) |
 | Scheduler | Recurring jobs |
 | SchedulerConsumer | Scheduler + consumer |
 | Dashboard.Api | Queue monitoring API (ASP.NET Core) |
