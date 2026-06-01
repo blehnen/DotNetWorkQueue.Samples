@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Linq;
 using DotNetWorkQueue;
 using DotNetWorkQueue.Configuration;
+using DotNetWorkQueue.Messages;
 using DotNetWorkQueue.Transport.PostgreSQL;
 using DotNetWorkQueue.Transport.PostgreSQL.Basic;
 using DotNetWorkQueue.Transport.RelationalDatabase;
@@ -160,7 +161,11 @@ namespace PostgreSQLProducerOutbox
 
                     if (queue is IRelationalProducerQueue<OrderCreatedEvent> relational)
                     {
-                        var result = relational.Send(order, tx);
+                        // EnableMessageExpiration = true → MetaData.ExpirationTime is NOT NULL.
+                        // Use the 3-arg Send(message, data, transaction) overload and supply expiration.
+                        var data = new AdditionalMessageData();
+                        data.SetExpiration(TimeSpan.FromDays(1));
+                        var result = relational.Send(order, data, tx);
                         if (result.HasError)
                         {
                             // Throw before reaching tx.Commit — otherwise the Orders row would

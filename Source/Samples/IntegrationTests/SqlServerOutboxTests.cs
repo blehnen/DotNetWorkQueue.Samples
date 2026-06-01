@@ -3,6 +3,7 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using DotNetWorkQueue;
 using DotNetWorkQueue.Transport.SqlServer;
 using DotNetWorkQueue.Transport.SqlServer.Basic;
 using Microsoft.Data.SqlClient;
@@ -48,6 +49,9 @@ END";
 
         protected override string DeleteOrderByIdSql =>
             "DELETE FROM [dbo].[Orders] WHERE [OrderId] = @OrderId";
+
+        protected override void ConfigureSeedExpiration(IAdditionalMessageData data) =>
+            data.SetExpiration(TimeSpan.FromDays(1));
     }
 
     [TestClass]

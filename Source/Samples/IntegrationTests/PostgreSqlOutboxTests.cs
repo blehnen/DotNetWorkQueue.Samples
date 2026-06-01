@@ -3,6 +3,7 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using DotNetWorkQueue;
 using DotNetWorkQueue.Transport.PostgreSQL;
 using DotNetWorkQueue.Transport.PostgreSQL.Basic;
 using Npgsql;
@@ -40,6 +41,9 @@ namespace IntegrationTests
 
         protected override string DeleteOrderByIdSql =>
             "DELETE FROM Orders WHERE OrderId = @OrderId";
+
+        protected override void ConfigureSeedExpiration(IAdditionalMessageData data) =>
+            data.SetExpiration(TimeSpan.FromDays(1));
     }
 
     [TestClass]

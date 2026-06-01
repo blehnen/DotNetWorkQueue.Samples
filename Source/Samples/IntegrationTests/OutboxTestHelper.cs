@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Linq;
 using DotNetWorkQueue;
 using DotNetWorkQueue.Configuration;
+using DotNetWorkQueue.Messages;
 using DotNetWorkQueue.Transport.RelationalDatabase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
@@ -47,6 +48,15 @@ namespace IntegrationTests
         protected abstract string CountOrderSql { get; }
 
         protected abstract string DeleteOrderByIdSql { get; }
+
+        /// <summary>
+        /// Sets the message expiration on the supplied IAdditionalMessageData. SetExpiration is a
+        /// TRANSPORT-SPECIFIC extension (lives in DotNetWorkQueue.Transport.SqlServer / .PostgreSQL),
+        /// so this base — which can't import a transport namespace — delegates to the subclass.
+        /// The queue is created with EnableMessageExpiration = true and the MetaData table's
+        /// ExpirationTime column is NOT NULL, so the Send call must supply expiration data.
+        /// </summary>
+        protected abstract void ConfigureSeedExpiration(IAdditionalMessageData data);
 
         // ---- Public API ------------------------------------------------------------------
 
@@ -156,7 +166,12 @@ namespace IntegrationTests
                                 queue is IRelationalProducerQueue<OrderCreatedEvent>,
                                 "producer must support IRelationalProducerQueue");
                             var relational = (IRelationalProducerQueue<OrderCreatedEvent>)queue;
-                            relational.Send(order, tx);
+                            // EnableMessageExpiration = true → MetaData.ExpirationTime is NOT NULL.
+                            // Use the 3-arg Send(message, data, transaction) overload and supply
+                            // expiration data from the transport-specific subclass.
+                            var data = new AdditionalMessageData();
+                            ConfigureSeedExpiration(data);
+                            relational.Send(order, data, tx);
 
                             if (commit)
                             {
