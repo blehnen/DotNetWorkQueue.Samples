@@ -9,6 +9,7 @@ using System.Data.Common;
 using System.Threading;
 using DotNetWorkQueue;
 using DotNetWorkQueue.Configuration;
+using DotNetWorkQueue.Messages;
 using DotNetWorkQueue.Transport.RelationalDatabase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SampleShared;
@@ -139,7 +140,13 @@ namespace IntegrationTests
             {
                 using (var queue = queueContainer.CreateProducer<OrderCreatedEvent>(queueConnection))
                 {
-                    IQueueOutputMessage result = queue.Send(msg);
+                    // The queue was created with EnableMessageExpiration = true, so the MetaData
+                    // table's ExpirationTime column is NOT NULL. The producer must supply an
+                    // expiration via IAdditionalMessageData or the INSERT fails. Match the pattern
+                    // used by LiteDbProducer.ExpiredDataFuture.
+                    var data = new AdditionalMessageData();
+                    data.SetExpiration(TimeSpan.FromDays(1));
+                    IQueueOutputMessage result = queue.Send(msg, data);
                     Assert.IsFalse(result.HasError, $"Seed failed: {result.SendingException?.Message}");
                 }
             }
