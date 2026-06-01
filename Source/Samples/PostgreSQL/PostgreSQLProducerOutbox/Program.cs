@@ -161,7 +161,15 @@ namespace PostgreSQLProducerOutbox
                     if (queue is IRelationalProducerQueue<OrderCreatedEvent> relational)
                     {
                         var result = relational.Send(order, tx);
-                        log.Information("Send queued: {HasError}", result.HasError);
+                        if (result.HasError)
+                        {
+                            // Throw before reaching tx.Commit — otherwise the Orders row would
+                            // persist without the queued message and break the atomicity guarantee
+                            // this sample exists to demonstrate.
+                            throw new InvalidOperationException(
+                                $"Outbox Send failed: {result.SendingException?.Message ?? "(no exception details)"}");
+                        }
+                        log.Information("Send queued successfully");
                     }
                     else
                     {

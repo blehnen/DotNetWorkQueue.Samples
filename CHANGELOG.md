@@ -1,6 +1,6 @@
 # Changelog
 
-### 2026-05-31 — DotNetWorkQueue 0.9.37 upgrade + outbox & inbox samples
+## 2026-05-31 — DotNetWorkQueue 0.9.37 upgrade + outbox & inbox samples
 
 - Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.35** to **0.9.37** across 39 csproj files (124 `PackageReference` attributes).
 - Align explicit transitive pins with what the 0.9.37 dependency tree requires (NU1605 avoidance):

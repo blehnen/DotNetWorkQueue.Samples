@@ -3,5 +3,5 @@
     "JAEGER_SERVICE_NAME": "dotnetworkqueue-PostgreSQLInbox-sample",
     "JAEGER_AGENT_HOST": "localhost",
     "JAEGER_AGENT_PORT": "6831"
-  },
+  }
 }

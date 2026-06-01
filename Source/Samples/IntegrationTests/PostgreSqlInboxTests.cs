@@ -82,7 +82,8 @@ namespace IntegrationTests
                     InboxTestHelper.ApplyDefaultConsumerConfig(queue);
                     queue.Configuration.Options().EnableHoldTransactionUntilMessageCommitted = true;
                 },
-                timeout: TimeSpan.FromSeconds(10));
+                timeout: TimeSpan.FromSeconds(10),
+                completionPredicate: () => _helper.ProjectionRowCount(_orderId) > 0);
 
             Assert.AreEqual(1, _helper.ProjectionRowCount(_orderId),
                 "OrdersProjection row must exist after the consumer commits (handler did not throw).");

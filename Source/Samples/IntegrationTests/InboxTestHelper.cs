@@ -6,6 +6,7 @@
 // from a context where the transport-specific namespace is imported — keeping this base transport-agnostic.
 using System;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Threading;
 using DotNetWorkQueue;
 using DotNetWorkQueue.Configuration;
@@ -170,10 +171,18 @@ namespace IntegrationTests
         /// Callback supplied by the test; sets transport-specific Options() + Worker/HeartBeat config.
         /// Called on the consumer queue BEFORE queue.Start is invoked.
         /// </param>
-        /// <param name="timeout">Bounded wait — handler runs in worker threads; this is the test poll window.</param>
+        /// <param name="timeout">Upper bound on the wait — handler runs in worker threads.</param>
+        /// <param name="completionPredicate">
+        /// Optional: when supplied, the method polls (every 100 ms) and returns as soon as the
+        /// predicate returns true, OR the timeout elapses. Use this for the COMMIT path (predicate
+        /// `() => ProjectionRowCount(orderId) > 0`) so the test finishes in well under the timeout
+        /// once the handler succeeds. Leave null for the ROLLBACK path — there's no positive
+        /// "nothing happened" signal, so the test must consume the full window before asserting.
+        /// </param>
         public void RunConsumerAndWait<TInit>(
             Action<IConsumerQueue> configureConsumer,
-            TimeSpan timeout)
+            TimeSpan timeout,
+            Func<bool> completionPredicate = null)
             where TInit : class, ITransportInit, new()
         {
             var queueConnection = new QueueConnection(_queueName, _connectionString);
@@ -194,8 +203,23 @@ namespace IntegrationTests
                     // (and worker/heartbeat options) BEFORE Start.
                     configureConsumer(queue);
                     queue.Start<OrderCreatedEvent>(InboxMessageProcessing.HandleMessages, CreateNotifications.Create(Log.Logger));
-                    // Bounded wait — the handler runs in worker threads; this is the test poll window.
-                    Thread.Sleep(timeout);
+
+                    if (completionPredicate == null)
+                    {
+                        Thread.Sleep(timeout);
+                    }
+                    else
+                    {
+                        var sw = Stopwatch.StartNew();
+                        while (sw.Elapsed < timeout)
+                        {
+                            if (completionPredicate())
+                            {
+                                return;
+                            }
+                            Thread.Sleep(100);
+                        }
+                    }
                 }
                 // Dispose stops the consumer.
             }

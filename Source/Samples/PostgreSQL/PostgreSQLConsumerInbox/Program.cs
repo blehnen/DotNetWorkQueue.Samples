@@ -42,7 +42,8 @@ namespace PostgreSQLConsumerInbox
                 {
                     if (!createQueue.QueueExists)
                     {
-                        Log.Error($"Could not find {connectionString}. Verify that you have run PostgreSQLProducerOutbox, which will create the queue and seed OrderCreatedEvent messages.");
+                        // Do NOT log the connection string here — it contains credentials.
+                        Log.Error("Queue '{QueueName}' does not exist. Run PostgreSQLProducerOutbox first; it creates the queue and seeds OrderCreatedEvent messages.", queueName);
                         return;
                     }
                 }

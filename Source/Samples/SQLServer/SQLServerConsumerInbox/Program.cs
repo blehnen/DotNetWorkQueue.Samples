@@ -40,7 +40,8 @@ namespace SQLServerConsumerInbox
                 {
                     if (!createQueue.QueueExists)
                     {
-                        Log.Error($"Could not find {connectionString}. Verify that you have run SQLServerProducerOutbox, which will create the queue and seed OrderCreatedEvent messages.");
+                        // Do NOT log the connection string here — it contains credentials.
+                        Log.Error("Queue '{QueueName}' does not exist. Run SQLServerProducerOutbox first; it creates the queue and seeds OrderCreatedEvent messages.", queueName);
                         return;
                     }
                 }
