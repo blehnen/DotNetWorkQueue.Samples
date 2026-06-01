@@ -52,6 +52,10 @@ END";
 
         protected override void ConfigureSeedExpiration(IAdditionalMessageData data) =>
             data.SetExpiration(TimeSpan.FromDays(1));
+
+        // MetaData table = {queueName}MetaData (PascalCase suffix); SQL Server preserves case in brackets.
+        protected override string CountQueueMessagesSql =>
+            $"SELECT COUNT(*) FROM [dbo].[{_queueName}MetaData]";
     }
 
     [TestClass]

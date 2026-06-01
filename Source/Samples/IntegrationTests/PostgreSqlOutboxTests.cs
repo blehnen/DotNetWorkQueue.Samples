@@ -44,6 +44,10 @@ namespace IntegrationTests
 
         protected override void ConfigureSeedExpiration(IAdditionalMessageData data) =>
             data.SetExpiration(TimeSpan.FromDays(1));
+
+        // MetaData table = {queueName}metadata — PG folds unquoted identifiers to lowercase.
+        protected override string CountQueueMessagesSql =>
+            $"SELECT COUNT(*) FROM {_queueName}metadata";
     }
 
     [TestClass]
