@@ -180,7 +180,9 @@ namespace IntegrationTests
                             // expiration data from the transport-specific subclass.
                             var data = new AdditionalMessageData();
                             ConfigureSeedExpiration(data);
-                            relational.Send(order, data, tx);
+                            var result = relational.Send(order, data, tx);
+                            Assert.IsFalse(result.HasError,
+                                $"Outbox Send failed: {result.SendingException?.Message}");
 
                             if (commit)
                             {
