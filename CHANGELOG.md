@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-04 — DotNetWorkQueue 0.9.38 upgrade
+
+- Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.37** to **0.9.38** across 39 csproj files (137 `PackageReference` attributes). No transitive pin changes — 0.9.38's dependency tree matches 0.9.37.
+- 0.9.38 fixes [DotNetWorkQueue#155](https://github.com/blehnen/DotNetWorkQueue/issues/155): `IAdminApi.Count` threw `InvalidCastException` on PostgreSQL under Npgsql 10.x because the `QueueStatusAdmin` enum was bound to an `integer` parameter that Npgsql 10.x will no longer accept implicitly.
+- Revert the `OutboxTestHelper.WaitingCount` workaround introduced in [3d51b4e](https://github.com/blehnen/DotNetWorkQueue.Samples/commit/3d51b4e) (direct `SELECT COUNT(*)` against the queue's MetaData table). `WaitingCount` is back on `IAdminApi.Count(connId, QueueStatusAdmin.Waiting)`. The `CountQueueMessagesSql` abstract seam and its two subclass overrides (`SqlServerOutboxTests.cs`, `PostgreSqlOutboxTests.cs`) are dropped.
+
 ## 2026-05-31 — DotNetWorkQueue 0.9.37 upgrade + outbox & inbox samples
 
 - Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.35** to **0.9.37** across 39 csproj files (124 `PackageReference` attributes).

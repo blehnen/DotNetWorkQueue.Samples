@@ -13,8 +13,8 @@
     <StartupObject>LiteDbProducerConsumer.Program</StartupObject>
   </PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="DotNetWorkQueue" Version="0.9.37" />
-		<PackageReference Include="DotNetWorkQueue.Transport.LiteDb" Version="0.9.37" />
+		<PackageReference Include="DotNetWorkQueue" Version="0.9.38" />
+		<PackageReference Include="DotNetWorkQueue.Transport.LiteDb" Version="0.9.38" />
 		<PackageReference Include="LiteDB" Version="5.0.21" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
@@ -52,7 +52,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.37" />
+    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.38" />
   </ItemGroup>
 	<ItemGroup>
 		<Reference Include="SampleShared">

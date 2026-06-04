@@ -11,8 +11,8 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue" Version="0.9.37" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.37" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.38" />
     <PackageReference Include="Jaeger.Thrift" Version="0.3.7" />
     <PackageReference Include="Jaeger.Thrift.VendoredThrift" Version="0.3.7" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.8" />
@@ -48,7 +48,7 @@
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.37" />
+    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.38" />
   </ItemGroup>
 	<ItemGroup>
 		<Reference Include="SampleShared">

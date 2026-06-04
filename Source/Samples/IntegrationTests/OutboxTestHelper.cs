@@ -58,15 +58,6 @@ namespace IntegrationTests
         /// </summary>
         protected abstract void ConfigureSeedExpiration(IAdditionalMessageData data);
 
-        /// <summary>
-        /// SELECT COUNT(*) FROM the queue's MetaData table. Used by WaitingCount to side-step
-        /// AdminApi.Count, which currently throws on PostgreSQL (Npgsql 10.x cannot write the
-        /// QueueStatusAdmin enum to an integer parameter). The MetaData table name is built from
-        /// the queue name per-transport (SQL Server: [dbo].[{queue}MetaData]; PG: {queue}metadata
-        /// because PG folds unquoted identifiers to lowercase).
-        /// </summary>
-        protected abstract string CountQueueMessagesSql { get; }
-
         // ---- Public API ------------------------------------------------------------------
 
         /// <summary>
@@ -199,22 +190,28 @@ namespace IntegrationTests
         }
 
         /// <summary>
-        /// Returns the count of queue messages by querying the MetaData table directly.
-        /// (The original implementation used IAdminApi.Count(QueueStatusAdmin.Waiting), which
-        /// throws InvalidCastException on PostgreSQL under Npgsql 10.x because Npgsql can't write
-        /// the QueueStatusAdmin enum to an integer parameter. Direct SQL bypasses the gap.)
-        /// Generic kept for signature compatibility; TInit unused.
+        /// Returns the count of queue messages in Waiting status via IAdminApi.Count.
         /// </summary>
         public long WaitingCount<TInit>()
             where TInit : class, ITransportInit, new()
         {
-            using (var conn = CreateConnection(_connectionString))
+            var queueConnection = new QueueConnection(_queueName, _connectionString);
+
+            using (var queueContainer = new QueueContainer<TInit>(
+                serviceRegister => Injectors.AddInjectors(
+                    Helpers.CreateForSerilog(),
+                    SharedConfiguration.EnableTrace,
+                    SharedConfiguration.EnableMetrics,
+                    SharedConfiguration.EnableCompression,
+                    SharedConfiguration.EnableEncryption,
+                    "OutboxTest", serviceRegister),
+                options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
             {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
+                using (var admin = queueContainer.CreateAdminApi())
                 {
-                    cmd.CommandText = CountQueueMessagesSql;
-                    return Convert.ToInt64(cmd.ExecuteScalar());
+                    admin.AddQueueConnection(queueContainer, queueConnection);
+                    var connId = admin.Connections.Keys.FirstOrDefault();
+                    return Convert.ToInt64(admin.Count(connId, QueueStatusAdmin.Waiting));
                 }
             }
         }

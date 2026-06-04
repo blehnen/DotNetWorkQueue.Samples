@@ -10,8 +10,8 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue" Version="0.9.37" />
-    <PackageReference Include="DotNetWorkQueue.Transport.PostgreSQL" Version="0.9.37" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Transport.PostgreSQL" Version="0.9.38" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
@@ -44,7 +44,7 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.37" />
+    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.38" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SampleShared">

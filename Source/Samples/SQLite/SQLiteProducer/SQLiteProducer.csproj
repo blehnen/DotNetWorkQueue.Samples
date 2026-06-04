@@ -13,8 +13,8 @@
     <StartupObject>SQLiteProducer.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue" Version="0.9.37" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.37" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.38" />
     <PackageReference Include="Jaeger.Thrift" Version="0.3.7" />
     <PackageReference Include="Jaeger.Thrift.VendoredThrift" Version="0.3.7" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.8" />
@@ -62,7 +62,7 @@
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.37" />
+		<PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.38" />
 	</ItemGroup>
   <ItemGroup>
     <Content Include="..\..\SampleShared\metricsettings.json" Link="metricsettings.json">
