@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.35) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer).
+Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.38) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer). SQL Server and PostgreSQL additionally include ProducerOutbox and ConsumerInbox (transactional outbox/inbox patterns introduced in DotNetWorkQueue 0.9.36/0.9.37).
 
 ## Release discipline
 
@@ -58,8 +58,8 @@ All projects target **net10.0** only. Starting with DotNetWorkQueue 0.9.19, the 
 ### Project Structure
 
 - **`Source/Samples/SampleShared/`** — Shared library containing common logic used by all samples: message factories, shared configuration reader, DI/metrics/tracing injectors, producer run loops, and message processing handlers.
-- **`Source/Samples/{Transport}/`** — Each transport folder contains a `Samples.sln` and 7 executable projects following the same naming pattern (e.g., `RedisProducer`, `RedisConsumerAsync`, `RedisScheduler`).
-- **`Source/Samples/DashBoard.Api/`** — Standalone ASP.NET Core Dashboard API + UI host (net10.0) that demonstrates the 0.9.35 multi-source dashboard config shape. Reads `Dashboard:Connections` for self-contained API mode and `DashboardApi:Sources[]` for multi-source UI routing. Uses `appsettings.json` for configuration. No SampleShared dependency.
+- **`Source/Samples/{Transport}/`** — Each transport folder contains a `Samples.sln` and 7 executable projects following the same naming pattern (e.g., `RedisProducer`, `RedisConsumerAsync`, `RedisScheduler`). SQL Server and PostgreSQL each have 9 — the additional 2 are `ProducerOutbox` and `ConsumerInbox` (transactional outbox/inbox samples).
+- **`Source/Samples/DashBoard.Api/`** — Standalone ASP.NET Core Dashboard API + UI host (net10.0) that demonstrates the 0.9.37 multi-source dashboard config shape. Reads `Dashboard:Connections` for self-contained API mode and `DashboardApi:Sources[]` for multi-source UI routing. Uses `appsettings.json` for configuration. No SampleShared dependency.
 
 ### Configuration
 
@@ -70,12 +70,12 @@ Each sample executable has:
 
 ### Key Dependencies
 
-- **DotNetWorkQueue** v0.9.35 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`, `DotNetWorkQueue.Dashboard.Ui`)
-- **OpenTelemetry** v1.14.0 (tracing via Jaeger)
+- **DotNetWorkQueue** v0.9.38 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`, `DotNetWorkQueue.Dashboard.Ui`)
+- **OpenTelemetry** v1.15.3 (tracing via Jaeger)
 - **App.Metrics** v4.3.0 (metrics via InfluxDB)
 - **Serilog** v4.3.0 (logging)
 - **Polly** v8.6.5 (chaos engineering)
-- **SimpleInjector** v5.5.0 (DI in executable projects)
+- **SimpleInjector** v5.5.2 (DI in executable projects)
 
 ## CI
 

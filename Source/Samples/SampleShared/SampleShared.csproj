@@ -5,12 +5,13 @@
   </PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="DotNetWorkQueue" Version="0.9.35" />
-	  <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.35" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
-	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
-	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
+	  <PackageReference Include="DotNetWorkQueue" Version="0.9.38" />
+	  <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.38" />
+	  <PackageReference Include="DotNetWorkQueue.Transport.RelationalDatabase" Version="0.9.38" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
 	  <PackageReference Include="OpenTelemetry.Api" Version="1.15.3" />
 	  <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.15.3" />
 	  <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />

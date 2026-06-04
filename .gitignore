@@ -33,6 +33,9 @@ bld/
 *.VisualState.xml
 TestResult.xml
 
+# JUnit XML test output (Jenkins junit publisher)
+junit-results/
+
 # Build Results of an ATL Project
 [Dd]ebugPS/
 [Rr]eleasePS/

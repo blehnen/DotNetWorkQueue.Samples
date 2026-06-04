@@ -9,26 +9,28 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.7.3" />
     <PackageReference Include="MSTest.TestFramework" Version="3.7.3" />
-    <PackageReference Include="DotNetWorkQueue" Version="0.9.35" />
-    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.35" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.35" />
-    <PackageReference Include="DotNetWorkQueue.Transport.LiteDb" Version="0.9.35" />
-    <PackageReference Include="DotNetWorkQueue.Transport.Redis" Version="0.9.35" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SqlServer" Version="0.9.35" />
-    <PackageReference Include="DotNetWorkQueue.Transport.PostgreSQL" Version="0.9.35" />
-    <PackageReference Include="Npgsql" Version="10.0.2" />
+    <PackageReference Include="JunitXml.TestLogger" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Transport.LiteDb" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Transport.Redis" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SqlServer" Version="0.9.38" />
+    <PackageReference Include="DotNetWorkQueue.Transport.PostgreSQL" Version="0.9.38" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="OpenTelemetry" Version="1.15.3" />
     <PackageReference Include="OpenTelemetry.Api" Version="1.15.3" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.15.3" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
-    <PackageReference Include="SimpleInjector" Version="5.5.1" />
+    <PackageReference Include="SimpleInjector" Version="5.5.2" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageReference Include="Polly.Caching.Memory" Version="3.0.2" />
   </ItemGroup>

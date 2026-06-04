@@ -36,8 +36,10 @@ pipeline {
                     dotnet test "Source/Samples/IntegrationTests/IntegrationTests.sln" \
                         -c Debug --no-build \
                         --filter "TestCategory=CI" \
-                        -f net10.0
+                        -f net10.0 \
+                        --logger "junit;LogFilePath=$WORKSPACE/junit-results/ci-{assembly}.{framework}.xml"
                 '''
+                stash includes: 'junit-results/**/*.xml', name: 'junit-ci', allowEmpty: true
             }
         }
 
@@ -61,8 +63,10 @@ pipeline {
                             dotnet test "Source/Samples/IntegrationTests/IntegrationTests.sln" \
                                 -c Debug --no-build \
                                 --filter "FullyQualifiedName~PostgreSql" \
-                                -f net10.0
+                                -f net10.0 \
+                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/postgresql-{assembly}.{framework}.xml"
                         '''
+                        stash includes: 'junit-results/**/*.xml', name: 'junit-postgresql', allowEmpty: true
                     }
                 }
 
@@ -84,8 +88,10 @@ pipeline {
                             dotnet test "Source/Samples/IntegrationTests/IntegrationTests.sln" \
                                 -c Debug --no-build \
                                 --filter "FullyQualifiedName~SqlServer" \
-                                -f net10.0
+                                -f net10.0 \
+                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/sqlserver-{assembly}.{framework}.xml"
                         '''
+                        stash includes: 'junit-results/**/*.xml', name: 'junit-sqlserver', allowEmpty: true
                     }
                 }
 
@@ -107,8 +113,10 @@ pipeline {
                             dotnet test "Source/Samples/IntegrationTests/IntegrationTests.sln" \
                                 -c Debug --no-build \
                                 --filter "FullyQualifiedName~Redis" \
-                                -f net10.0
+                                -f net10.0 \
+                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/redis-{assembly}.{framework}.xml"
                         '''
+                        stash includes: 'junit-results/**/*.xml', name: 'junit-redis', allowEmpty: true
                     }
                 }
             }
@@ -116,6 +124,27 @@ pipeline {
     }
 
     post {
+        always {
+            // Pipeline-level post action — agent is `none`, so wrap in a node.
+            // Unstash each per-stage junit bundle inside its own try/catch so an
+            // early-stage failure that never produced a stash doesn't break the
+            // publish for the rest. The junit step itself is tolerant of empty
+            // results via allowEmptyResults.
+            node('docker') {
+                script {
+                    def junitStashes = [
+                        'junit-ci',
+                        'junit-postgresql',
+                        'junit-sqlserver',
+                        'junit-redis'
+                    ]
+                    junitStashes.each { s ->
+                        try { unstash s } catch (Exception e) { echo "JUnit unstash '${s}' skipped: ${e.message}" }
+                    }
+                }
+                junit allowEmptyResults: true, testResults: 'junit-results/**/*.xml'
+            }
+        }
         failure {
             echo 'Pipeline failed. Check stage logs for details.'
         }

@@ -22,7 +22,7 @@ namespace IntegrationTests
                 AppContext.BaseDirectory,
                 "..", "..", "..", "..",
                 "SQLServer", "SQLServerProducer", "App.config"));
-            var connectionString = ReadAppConfigValue(appConfigPath, "Database");
+            var connectionString = TestHelpers.ReadAppConfigValue(appConfigPath, "Database");
             var queueName = $"test_{Guid.NewGuid():N}";
             _helper = new ProduceConsumeTestHelper(queueName, connectionString, messageCount: 5);
         }
@@ -51,16 +51,6 @@ namespace IntegrationTests
         public void Cleanup()
         {
             _helper?.RemoveQueue<SqlServerMessageQueueInit, SqlServerMessageQueueCreation>();
-        }
-
-        private static string ReadAppConfigValue(string appConfigPath, string key)
-        {
-            var doc = XDocument.Load(appConfigPath);
-            var element = doc.Root?.Element("appSettings")?
-                .Elements("add")
-                .FirstOrDefault(e => e.Attribute("key")?.Value == key);
-            return element?.Attribute("value")?.Value
-                ?? throw new InvalidOperationException($"Key '{key}' not found in {appConfigPath}");
         }
     }
 }

@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-06-04 — DotNetWorkQueue 0.9.38 upgrade
+
+- Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.37** to **0.9.38** across 39 csproj files (137 `PackageReference` attributes). No transitive pin changes — 0.9.38's dependency tree matches 0.9.37.
+- 0.9.38 fixes [DotNetWorkQueue#155](https://github.com/blehnen/DotNetWorkQueue/issues/155): `IAdminApi.Count` threw `InvalidCastException` on PostgreSQL under Npgsql 10.x because the `QueueStatusAdmin` enum was bound to an `integer` parameter that Npgsql 10.x will no longer accept implicitly.
+- Revert the `OutboxTestHelper.WaitingCount` workaround introduced in [3d51b4e](https://github.com/blehnen/DotNetWorkQueue.Samples/commit/3d51b4e) (direct `SELECT COUNT(*)` against the queue's MetaData table). `WaitingCount` is back on `IAdminApi.Count(connId, QueueStatusAdmin.Waiting)`. The `CountQueueMessagesSql` abstract seam and its two subclass overrides (`SqlServerOutboxTests.cs`, `PostgreSqlOutboxTests.cs`) are dropped.
+
+## 2026-05-31 — DotNetWorkQueue 0.9.37 upgrade + outbox & inbox samples
+
+- Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.35** to **0.9.37** across 39 csproj files (124 `PackageReference` attributes).
+- Align explicit transitive pins with what the 0.9.37 dependency tree requires (NU1605 avoidance):
+  - `Microsoft.Extensions.*` 10.0.7 → **10.0.8** (17 packages)
+  - `Npgsql` 10.0.2 → **10.0.3**
+  - `StackExchange.Redis` 2.12.14 → **2.13.17**
+  - `SimpleInjector` 5.5.1 → **5.5.2**
+  - `MudBlazor` 9.3.0 → **9.5.0** (Dashboard.Api only)
+- Fix GitHub Actions CI: `.github/workflows/ci.yml` `dotnet-version` updated from `8.0.x` to `10.0.x` to match the net10.0 sample target.
+- Add `SQLServerProducerOutbox` and `PostgreSQLProducerOutbox` sample projects: open a business connection, begin a transaction, insert an `Orders` row, capability-cast the producer to `IRelationalProducerQueue<OrderCreatedEvent>`, call `Send(msg, tx)`, then commit or rollback — demonstrating that a rollback leaves both the business row and the queued message absent. Add `SqlServerOutboxTests` and `PostgreSqlOutboxTests` (LocalOnly) to `IntegrationTests` covering both commit and rollback paths.
+- Add `SQLServerConsumerInbox` and `PostgreSQLConsumerInbox` sample projects: configure the consumer with `EnableHoldTransactionUntilMessageCommitted = true`, then delegate to `InboxMessageProcessing.HandleMessages`, which casts `IWorkerNotification` to `IRelationalWorkerNotification` and writes to `OrdersProjection` on the library-owned transaction atomically. Add `SqlServerInboxTests` and `PostgreSqlInboxTests` (LocalOnly) to `IntegrationTests` covering commit (projection row written) and rollback (`ForceRollback=true` causes handler throw → queue and projection both rolled back).
+- Add `DotNetWorkQueue.Transport.RelationalDatabase` @0.9.37 to `SampleShared.csproj`; add `OrderCreatedEvent.cs` POCO and `InboxMessageProcessing.cs` shared handler (used by both inbox sample projects).
+- Verified with clean restore + build across SampleShared, all 5 transport solutions, Dashboard.Api, and IntegrationTests (0 warnings, 0 errors). CI-category integration tests pass on SQLite + LiteDb; LocalOnly outbox/inbox tests pass on developer SQL Server + PostgreSQL instances.
+
 ### 2026-04-23 — DotNetWorkQueue 0.9.35 upgrade
 
 - Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.31** to **0.9.35** across 39 csproj files.
