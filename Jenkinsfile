@@ -37,7 +37,7 @@ pipeline {
                         -c Debug --no-build \
                         --filter "TestCategory=CI" \
                         -f net10.0 \
-                        --logger "junit;LogFilePath=$WORKSPACE/junit-results/{assembly}.{framework}.xml"
+                        --logger "junit;LogFilePath=$WORKSPACE/junit-results/ci-{assembly}.{framework}.xml"
                 '''
                 stash includes: 'junit-results/**/*.xml', name: 'junit-ci', allowEmpty: true
             }
@@ -64,7 +64,7 @@ pipeline {
                                 -c Debug --no-build \
                                 --filter "FullyQualifiedName~PostgreSql" \
                                 -f net10.0 \
-                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/{assembly}.{framework}.xml"
+                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/postgresql-{assembly}.{framework}.xml"
                         '''
                         stash includes: 'junit-results/**/*.xml', name: 'junit-postgresql', allowEmpty: true
                     }
@@ -89,7 +89,7 @@ pipeline {
                                 -c Debug --no-build \
                                 --filter "FullyQualifiedName~SqlServer" \
                                 -f net10.0 \
-                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/{assembly}.{framework}.xml"
+                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/sqlserver-{assembly}.{framework}.xml"
                         '''
                         stash includes: 'junit-results/**/*.xml', name: 'junit-sqlserver', allowEmpty: true
                     }
@@ -114,7 +114,7 @@ pipeline {
                                 -c Debug --no-build \
                                 --filter "FullyQualifiedName~Redis" \
                                 -f net10.0 \
-                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/{assembly}.{framework}.xml"
+                                --logger "junit;LogFilePath=$WORKSPACE/junit-results/redis-{assembly}.{framework}.xml"
                         '''
                         stash includes: 'junit-results/**/*.xml', name: 'junit-redis', allowEmpty: true
                     }
