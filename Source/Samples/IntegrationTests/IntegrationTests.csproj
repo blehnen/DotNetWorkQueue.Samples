@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.7.3" />
     <PackageReference Include="MSTest.TestFramework" Version="3.7.3" />
+    <PackageReference Include="JunitXml.TestLogger" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="DotNetWorkQueue" Version="0.9.38" />
     <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.9.38" />
     <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.9.38" />
