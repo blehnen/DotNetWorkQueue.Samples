@@ -63,21 +63,21 @@ namespace SampleShared
         }
 
         private static void AddMessageInterceptors(IContainer container,
-            bool des, bool gzip)
+            bool encryption, bool gzip)
         {
-            //encryption keys for sample only
-            string key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-            string iv = "aaaaaaaaaaa=";
+            //AES-256 key for sample only — in production load a stable 32-byte key from a secret
+            //store, never hard-code it (the producer and every consumer must use the same key).
+            byte[] key = System.Text.Encoding.ASCII.GetBytes("0123456789abcdef0123456789abcdef");
 
-            if (des && gzip)
+            if (encryption && gzip)
             {
-                var desConfiguration = new TripleDesMessageInterceptorConfiguration(Convert.FromBase64String(key), Convert.FromBase64String(iv));
+                var aesConfiguration = new AesMessageInterceptorConfiguration(key);
                 container.RegisterCollection<IMessageInterceptor>(new[]
                 {
                     typeof (GZipMessageInterceptor), //gzip compression
-                    typeof (TripleDesMessageInterceptor) //encryption
+                    typeof (AesMessageInterceptor) //encryption (AES-256-GCM)
                 });
-                container.Register(() => desConfiguration, LifeStyles.Singleton);
+                container.Register(() => aesConfiguration, LifeStyles.Singleton);
             }
             else if (gzip)
             {
@@ -86,14 +86,14 @@ namespace SampleShared
                     typeof (GZipMessageInterceptor) //gzip compression
                 });
             }
-            else if (des)
+            else if (encryption)
             {
-                var desConfiguration = new TripleDesMessageInterceptorConfiguration(Convert.FromBase64String(key), Convert.FromBase64String(iv));
+                var aesConfiguration = new AesMessageInterceptorConfiguration(key);
                 container.RegisterCollection<IMessageInterceptor>(new[]
                 {
-                    typeof (TripleDesMessageInterceptor) //encryption
+                    typeof (AesMessageInterceptor) //encryption (AES-256-GCM)
                 });
-                container.Register(() => desConfiguration,
+                container.Register(() => aesConfiguration,
                     LifeStyles.Singleton);
             }
         }
