@@ -1,6 +1,7 @@
 # DotNetWorkQueue.Samples
 
 [![Build status](https://github.com/blehnen/DotNetWorkQueue.Samples/actions/workflows/ci.yml/badge.svg)](https://github.com/blehnen/DotNetWorkQueue.Samples/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Sample applications for [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue). Build `SampleShared.sln` first — all other projects depend on it.
 
