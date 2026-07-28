@@ -24,9 +24,10 @@ namespace SampleShared
                 //simulate some processing
                 System.Threading.Thread.Sleep(100);
 
-                var i = 9 - 9;
-                var result = 100 / i;
-                arg2.Log.LogInformation(result.ToString());
+                //simulate an unexpected fault part-way through processing. Unlike the explicit
+                //throws below, this stands in for a latent bug in the handler rather than a
+                //validation failure - the queue treats it the same way either.
+                throw new DivideByZeroException("simulated processing failure");
             }
             else if (arg1.Body.Error == ErrorTypes.RetryableErrorFail)
             {
