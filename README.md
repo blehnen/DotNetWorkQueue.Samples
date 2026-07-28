@@ -2,6 +2,9 @@
 
 [![Build status](https://github.com/blehnen/DotNetWorkQueue.Samples/actions/workflows/ci.yml/badge.svg)](https://github.com/blehnen/DotNetWorkQueue.Samples/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=blehnen_DotNetWorkQueue.Samples&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=blehnen_DotNetWorkQueue.Samples)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=blehnen_DotNetWorkQueue.Samples&metric=bugs)](https://sonarcloud.io/summary/new_code?id=blehnen_DotNetWorkQueue.Samples)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=blehnen_DotNetWorkQueue.Samples&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=blehnen_DotNetWorkQueue.Samples)
 
 Sample applications for [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue). Build `SampleShared.sln` first — all other projects depend on it.
 
