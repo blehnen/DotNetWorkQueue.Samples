@@ -99,7 +99,34 @@ jobs:
           # the same folder). Against the gate's 3% threshold on new code, that structure fails
           # any routine PR touching a transport. SampleShared, IntegrationTests, and DashBoard.Api
           # keep full CPD signal — duplication there would be a real defect.
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"blehnen_DotNetWorkQueue.Samples" /o:"blehnen" /d:sonar.exclusions="**/*.png,**/*.ico,**/*.jpg,**/*.jpeg,**/*.gif,**/*.webp,**/*.woff,**/*.woff2,**/*.ttf,**/*.eot" /d:sonar.coverage.exclusions="**/*" /d:sonar.cpd.exclusions="**/Samples/LiteDb/**/*,**/Samples/PostgreSQL/**/*,**/Samples/Redis/**/*,**/Samples/SQLite/**/*,**/Samples/SQLServer/**/*"
+          #
+          # Two narrowly-scoped rule exclusions:
+          #   e1  S1118 on **/Program.cs — "add a private constructor to hide the implicit public
+          #       one". Every sample entry point is a `class Program { static void Main }`, so this
+          #       fires once per sample (26 hits) and asks for a change that makes the teaching
+          #       code noisier without making it safer. Scoped to Program.cs so a genuine utility
+          #       class elsewhere still gets flagged.
+          #   e2  S2068 on the DashBoard.Api appsettings files — the rule fires on the literal
+          #       token "password" in a connection string regardless of its value, and these are
+          #       placeholders (`yourpassword`, `changeme`) that a user is expected to replace.
+          #       PostgreSQL has no integrated-auth form, so the token cannot be removed the way
+          #       it was for the SQL Server entries. Scoped to those two files only, so a real
+          #       credential landing anywhere else is still caught.
+          $scanner = "${{ runner.temp }}\scanner\dotnet-sonarscanner"
+          $sonarArgs = @(
+            '/k:blehnen_DotNetWorkQueue.Samples'
+            '/o:blehnen'
+            '/d:sonar.exclusions=**/*.png,**/*.ico,**/*.jpg,**/*.jpeg,**/*.gif,**/*.webp,**/*.woff,**/*.woff2,**/*.ttf,**/*.eot'
+            '/d:sonar.coverage.exclusions=**/*'
+            '/d:sonar.cpd.exclusions=**/Samples/LiteDb/**/*,**/Samples/PostgreSQL/**/*,**/Samples/Redis/**/*,**/Samples/SQLite/**/*,**/Samples/SQLServer/**/*'
+            '/d:sonar.issue.ignore.multicriteria=e1,e2'
+            '/d:sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S1118'
+            '/d:sonar.issue.ignore.multicriteria.e1.resourceKey=**/Program.cs'
+            '/d:sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S2068'
+            '/d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/DashBoard.Api/**/appsettings*.json'
+          )
+          & $scanner begin $sonarArgs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
           # SampleShared first — the rest reference its compiled DLL via HintPath.
           $solutions = @(
@@ -117,4 +144,4 @@ jobs:
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
 
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner end
+          & $scanner end
