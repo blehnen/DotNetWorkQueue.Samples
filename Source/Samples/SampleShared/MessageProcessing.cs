@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -17,74 +17,99 @@ namespace SampleShared
 
         public static void HandleMessages(IReceivedMessage<SimpleMessage> arg1, IWorkerNotification arg2)
         {
-            arg2.Log.LogInformation($"Processing message {arg1.MessageId.Id.Value.ToString()} - Processing time is {arg1.Body.ProcessingTime}");
+            arg2.Log.LogInformation("Processing message {MessageId} - Processing time is {ProcessingTime}",
+                arg1.MessageId.Id.Value, arg1.Body.ProcessingTime);
 
-            if (arg1.Body.Error == ErrorTypes.Error)
+            SimulateConfiguredFault(arg1, arg2);
+            WaitForProcessing(arg1, arg2);
+
+            arg2.Log.LogInformation("Message {MessageId} complete", arg1.MessageId.Id.Value);
+        }
+
+        /// <summary>
+        /// Reproduces whatever failure mode the message asked for, so the samples can show how the
+        /// queue reacts to each one. A message with <see cref="ErrorTypes.None"/> just falls through.
+        /// </summary>
+        private static void SimulateConfiguredFault(IReceivedMessage<SimpleMessage> message, IWorkerNotification notification)
+        {
+            switch (message.Body.Error)
             {
-                //simulate some processing
-                System.Threading.Thread.Sleep(100);
+                case ErrorTypes.Error:
+                    //simulate some processing
+                    System.Threading.Thread.Sleep(100);
 
-                //simulate an unexpected fault part-way through processing. Unlike the explicit
-                //throws below, this stands in for a latent bug in the handler rather than a
-                //validation failure - the queue treats it the same way either.
-                throw new DivideByZeroException("simulated processing failure");
+                    //simulate an unexpected fault part-way through processing. Unlike the explicit
+                    //throws below, this stands in for a latent bug in the handler rather than a
+                    //validation failure - the queue treats it the same way either.
+                    throw new DivideByZeroException("simulated processing failure");
+
+                case ErrorTypes.RetryableErrorFail:
+                    LogPreviousErrors(message, notification);
+
+                    //simulate some processing
+                    System.Threading.Thread.Sleep(100);
+                    throw new InvalidDataException("the data is invalid. We will retry a few times and then give up because this error will happen over and over");
+
+                case ErrorTypes.RetryableError:
+                    SimulateRetryableError(message, notification);
+                    break;
             }
-            else if (arg1.Body.Error == ErrorTypes.RetryableErrorFail)
+        }
+
+        /// <summary>
+        /// Fails the first few attempts and then succeeds, so the retry delay behaviour is visible.
+        /// </summary>
+        private static void SimulateRetryableError(IReceivedMessage<SimpleMessage> message, IWorkerNotification notification)
+        {
+            //simulate some processing
+            System.Threading.Thread.Sleep(100);
+
+            var messageId = message.MessageId.Id.Value.ToString();
+            if (!RetryErrorCount.ContainsKey(messageId))
             {
-                foreach (var error in arg1.PreviousErrors)
-                {
-                    arg2.Log.LogInformation($"previous error {error.Key}, count {error.Value}");
-                }
-
-                //simulate some processing
-                System.Threading.Thread.Sleep(100);
-                throw new InvalidDataException("the data is invalid. We will retry a few times and then give up because this error will happen over and over");
+                RetryErrorCount.TryAdd(messageId, 1);
+                throw new InvalidDataException("the data is invalid");
             }
-            else if (arg1.Body.Error == ErrorTypes.RetryableError)
+
+            LogPreviousErrors(message, notification);
+
+            //enough attempts - let this one through
+            if (RetryErrorCount[messageId] > 2)
+                return;
+
+            RetryErrorCount[messageId] += 1;
+            throw new InvalidDataException("the data is invalid");
+        }
+
+        private static void LogPreviousErrors(IReceivedMessage<SimpleMessage> message, IWorkerNotification notification)
+        {
+            foreach (var error in message.PreviousErrors)
             {
-                //simulate some processing
-                System.Threading.Thread.Sleep(100);
-
-                if (!RetryErrorCount.ContainsKey(arg1.MessageId.Id.Value.ToString()))
-                {
-                    RetryErrorCount.TryAdd(arg1.MessageId.Id.Value.ToString(), 1);
-                    throw new InvalidDataException("the data is invalid");
-                }
-                else if (RetryErrorCount[arg1.MessageId.Id.Value.ToString()] > 2)
-                {
-                    //complete
-                    foreach (var error in arg1.PreviousErrors)
-                    {
-                        arg2.Log.LogInformation($"previous error {error.Key}, count {error.Value}");
-                    }
-                }
-                else
-                {
-                    RetryErrorCount[arg1.MessageId.Id.Value.ToString()] = RetryErrorCount[arg1.MessageId.Id.Value.ToString()] + 1;
-                    foreach (var error in arg1.PreviousErrors)
-                    {
-                        arg2.Log.LogInformation($"previous error {error.Key}, count {error.Value}");
-                    }
-                    throw new InvalidDataException("the data is invalid");
-                }
+                notification.Log.LogInformation("previous error {PreviousError}, count {PreviousErrorCount}",
+                    error.Key, error.Value);
             }
+        }
 
-            //allow canceling if the transport supports rolling back
-            if (arg2.TransportSupportsRollback)
+        /// <summary>
+        /// Stands in for the actual work. On transports that can roll back we wait on the
+        /// cancellation token instead of sleeping, so a cancel can requeue the message.
+        /// </summary>
+        private static void WaitForProcessing(IReceivedMessage<SimpleMessage> message, IWorkerNotification notification)
+        {
+            if (!notification.TransportSupportsRollback)
             {
-                //MessageCancellation.Token is linked to the worker-level tokens, so it fires when:
-                // - The worker is stopping (graceful shutdown)
-                // - A per-message cancel is requested (e.g. from the dashboard)
-                var canceled =
-                    arg2.MessageCancellation.Token.WaitHandle.WaitOne(
-                        TimeSpan.FromMilliseconds(arg1.Body.ProcessingTime));
-
-                if (canceled) throw new OperationCanceledException("Processing was canceled"); //force a requeue
+                System.Threading.Thread.Sleep(message.Body.ProcessingTime);
+                return;
             }
-            else
-                System.Threading.Thread.Sleep(arg1.Body.ProcessingTime);
 
-            arg2.Log.LogInformation($"Message {arg1.MessageId.Id.Value.ToString()} complete");
+            //MessageCancellation.Token is linked to the worker-level tokens, so it fires when:
+            // - The worker is stopping (graceful shutdown)
+            // - A per-message cancel is requested (e.g. from the dashboard)
+            var canceled =
+                notification.MessageCancellation.Token.WaitHandle.WaitOne(
+                    TimeSpan.FromMilliseconds(message.Body.ProcessingTime));
+
+            if (canceled) throw new OperationCanceledException("Processing was canceled"); //force a requeue
         }
     }
 }

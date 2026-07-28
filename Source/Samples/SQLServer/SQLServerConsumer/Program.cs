@@ -41,7 +41,7 @@ namespace SQLServerConsumer
                     if (!createQueue.QueueExists)
                     {
                         //the consumer can't do anything if the queue hasn't been created
-                        Log.Error($"Could not find {connectionString}. Verify that you have run the producer, which will create the queue");
+                        Log.Error("Could not find {ConnectionString}. Verify that you have run the producer, which will create the queue", connectionString);
                         //flush the telemetry emitted during startup before bailing out
                         Injectors.ShutdownTelemetry();
                         return;
@@ -74,7 +74,7 @@ namespace SQLServerConsumer
                     if (!string.IsNullOrEmpty(enabledUserColumns) && bool.Parse(enabledUserColumns))
                     {
                         var dayofWeek = int.Parse(ConfigurationManager.AppSettings.ReadSetting("UserDayOfWeek"));
-                        log.Information($"Only processing items created on {((DayOfWeek)dayofWeek).ToString()}");
+                        log.Information("Only processing items created on {DayOfWeek}", (DayOfWeek)dayofWeek);
                         queue.Configuration.SetUserParametersAndClause(() => Parameters(dayofWeek), WhereClause);
                     }
 

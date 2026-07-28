@@ -71,7 +71,7 @@ namespace SampleShared
                 }
             }
 
-            arg2.Log.LogInformation($"Inbox: persisted OrderId {arg1.Body.OrderId} to OrdersProjection.");
+            arg2.Log.LogInformation("Inbox: persisted OrderId {OrderId} to OrdersProjection.", arg1.Body.OrderId);
         }
 
         private static void AddParameter(DbCommand cmd, string name, object value)

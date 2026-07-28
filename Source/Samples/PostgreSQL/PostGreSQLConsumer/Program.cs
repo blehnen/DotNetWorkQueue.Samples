@@ -37,7 +37,7 @@ namespace PostGreSQLConsumer
                     if (!createQueue.QueueExists)
                     {
                         //the consumer can't do anything if the queue hasn't been created
-                        Log.Error($"Could not find {connectionString}. Verify that you have run the producer, which will create the queue");
+                        Log.Error("Could not find {ConnectionString}. Verify that you have run the producer, which will create the queue", connectionString);
                         //flush the telemetry emitted during startup before bailing out
                         Injectors.ShutdownTelemetry();
                         return;
