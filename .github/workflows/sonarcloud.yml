@@ -13,6 +13,11 @@ permissions:
 jobs:
   build:
     name: Build and analyze
+    # Fork PRs run without access to repository secrets, so SONAR_TOKEN would be empty and
+    # `dotnet-sonarscanner begin` would fail with an auth error — a red check that tells a
+    # contributor nothing. Skip the job instead. (pull_request_target is NOT the fix here: it
+    # would hand secrets to a workflow that builds untrusted code.) ci.yml still runs on forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: windows-latest
     steps:
       - name: Set up JDK 17
