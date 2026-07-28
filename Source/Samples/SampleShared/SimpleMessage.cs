@@ -25,13 +25,11 @@ namespace SampleShared
     {
         public void RunMe(IWorkerNotification workNotification, string input1, int input2, SomeInput moreInput)
         {
-            var sb = new StringBuilder();
-            sb.Append(input1);
-            sb.Append(" ");
-            sb.Append(input2);
-            sb.Append(" ");
-            sb.AppendLine(moreInput.Message);
-            workNotification.Log.LogInformation(sb.ToString());
+            //a constant template with the values as arguments - the previous StringBuilder
+            //produced a different template on every call, which defeats structured logging
+            //and forces the string to be built even when the level is disabled
+            workNotification.Log.LogInformation("{Input1} {Input2} {MoreInput}",
+                input1, input2, moreInput.Message);
         }
     }
 

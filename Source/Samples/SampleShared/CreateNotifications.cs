@@ -17,34 +17,37 @@ namespace SampleShared
                     (notification) => OnMessageCompleted(logger, notification));
             return notifications;
         }
+        //Message templates use named placeholders rather than interpolation. The sink then stores
+        //MessageId and Error as queryable properties instead of a single flattened string, and the
+        //arguments are only formatted if the level is actually enabled.
         private static void OnMessageCompleted(ILogger log, MessageCompleteNotification obj)
         {
-            log.Information($"Processing completed {obj.MessageId}");
+            log.Information("Processing completed {MessageId}", obj.MessageId);
         }
 
         private static void OnMessageRollBack(ILogger log, RollBackNotification obj)
         {
-            log.Warning($"Processing has triggered a rollback {System.Environment.NewLine}{obj.MessageId}{System.Environment.NewLine}{obj.Error}");
+            log.Warning("Processing has triggered a rollback for {MessageId}: {Error}", obj.MessageId, obj.Error);
         }
 
         private static void OnPoisonMessage(ILogger log, PoisonMessageNotification obj)
         {
-            log.Error($"Processing has triggered a poison message {System.Environment.NewLine}{obj.MessageId}{System.Environment.NewLine}{obj.Error}");
+            log.Error("Processing has triggered a poison message for {MessageId}: {Error}", obj.MessageId, obj.Error);
         }
 
         private static void OnMessageMovedToErrorQueue(ILogger log, ErrorNotification obj)
         {
-            log.Error($"Processing has failed {System.Environment.NewLine}{obj.MessageId}{System.Environment.NewLine}{obj.Error}");
+            log.Error("Processing has failed for {MessageId}: {Error}", obj.MessageId, obj.Error);
         }
 
         private static void OnReceiveMessageError(ILogger log, ErrorReceiveNotification obj)
         {
-            log.Error($"Processing has failed to dequeue a message {System.Environment.NewLine}{obj.Error}");
+            log.Error("Processing has failed to dequeue a message: {Error}", obj.Error);
         }
 
         private static void OnError(ILogger log, ErrorNotification obj)
         {
-            log.Error($"Processing has failed {System.Environment.NewLine}{obj.Error}");
+            log.Error("Processing has failed: {Error}", obj.Error);
         }
     }
 }

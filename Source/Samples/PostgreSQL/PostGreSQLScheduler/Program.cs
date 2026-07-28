@@ -111,7 +111,7 @@ q) Quit");
                                     var jobs = scheduler.GetAllJobs();
                                     foreach (var job in jobs)
                                     {
-                                        Log.Information("Job: {@job}", job);
+                                        Log.Information("Job: {@Job}", job);
                                     }
                                     break;
                                 case 'e':
