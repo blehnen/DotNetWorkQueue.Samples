@@ -65,7 +65,7 @@ namespace SampleShared
             System.Threading.Thread.Sleep(100);
 
             var messageId = message.MessageId.Id.Value.ToString();
-            if (!RetryErrorCount.ContainsKey(messageId))
+            if (!RetryErrorCount.TryGetValue(messageId, out var attempts))
             {
                 RetryErrorCount.TryAdd(messageId, 1);
                 throw new InvalidDataException("the data is invalid");
@@ -74,10 +74,10 @@ namespace SampleShared
             LogPreviousErrors(message, notification);
 
             //enough attempts - let this one through
-            if (RetryErrorCount[messageId] > 2)
+            if (attempts > 2)
                 return;
 
-            RetryErrorCount[messageId] += 1;
+            RetryErrorCount[messageId] = attempts + 1;
             throw new InvalidDataException("the data is invalid");
         }
 
