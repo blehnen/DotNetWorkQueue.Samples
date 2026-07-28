@@ -75,9 +75,9 @@ namespace RedisConsumerLinq
                             queue.Start(CreateNotifications.Create(log));
                             Helpers.WaitForCancelKeyPress();
 
-                            //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
-                            if (SharedConfiguration.EnableTrace)
-                                System.Threading.Thread.Sleep(2000);
+                            //flush telemetry still sitting in the exporters' batch queues; without this the
+                            //last few seconds of traces and metrics are dropped when the process exits
+                            Injectors.ShutdownTelemetry();
                         }
                     }
                 }
