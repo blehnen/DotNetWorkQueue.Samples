@@ -1,0 +1,120 @@
+name: SonarQube
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  build:
+    name: Build and analyze
+    # Fork PRs run without access to repository secrets, so SONAR_TOKEN would be empty and
+    # `dotnet-sonarscanner begin` would fail with an auth error — a red check that tells a
+    # contributor nothing. Skip the job instead. (pull_request_target is NOT the fix here: it
+    # would hand secrets to a workflow that builds untrusted code.) ci.yml still runs on forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: windows-latest
+    steps:
+      - name: Set up JDK 17
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        with:
+          java-version: 17
+          distribution: 'zulu' # Alternative distribution options are available.
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          persist-credentials: false  # don't write GITHUB_TOKEN to .git/config; scanner doesn't push
+      - name: Setup .NET
+        # Samples target net10.0 only; 8.0.x is installed because dotnet-sonarscanner
+        # itself is a net8.0 tool and needs that runtime present to launch.
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Cache SonarQube Cloud packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarQube Cloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Install SonarQube Cloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
+      - name: Restore
+        shell: powershell
+        run: |
+          # Restored outside the scanner session so NuGet output isn't part of the analysis log.
+          $solutions = @(
+            "Source\Samples\SampleShared\SampleShared.sln",
+            "Source\Samples\LiteDb\Samples.sln",
+            "Source\Samples\PostgreSQL\Samples.sln",
+            "Source\Samples\Redis\Samples.sln",
+            "Source\Samples\SQLite\Samples.sln",
+            "Source\Samples\SQLServer\Samples.sln",
+            "Source\Samples\DashBoard.Api\DashBoard.Api.sln",
+            "Source\Samples\IntegrationTests\IntegrationTests.sln"
+          )
+          foreach ($s in $solutions) {
+            dotnet restore $s
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          # This repo has no single solution — it is 8 independent solutions. They share no
+          # projects, so one scanner session can wrap all 8 builds and the scanner will report
+          # them as one project. SampleShared must build first: every other project consumes it
+          # through a HintPath to the compiled DLL, not a ProjectReference.
+          #
+          # No coverage is collected anywhere in this repo (Jenkins runs the integration tests
+          # but does not measure coverage, and this workflow only builds). sonar.coverage.exclusions
+          # tells Sonar not to expect coverage data so its "Coverage on New Code" gate condition
+          # does not fail every PR.
+          #
+          # sonar.cpd.exclusions excludes the five transport sample folders from copy-paste
+          # detection. Each transport ships the same set of patterns (Producer, ProducerLinq,
+          # Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer) implemented
+          # against a different backend, so the samples are deliberately parallel and each
+          # Program.cs is meant to be readable standalone rather than factored into shared
+          # helpers. Sonar's own Automatic Analysis measured 48.9% duplicated lines repo-wide with
+          # no exclusions, and the largest pairs are intentional (e.g. Producer vs ProducerLinq in
+          # the same folder). Against the gate's 3% threshold on new code, that structure fails
+          # any routine PR touching a transport. SampleShared, IntegrationTests, and DashBoard.Api
+          # keep full CPD signal — duplication there would be a real defect.
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"blehnen_DotNetWorkQueue.Samples" /o:"blehnen" /d:sonar.exclusions="**/*.png,**/*.ico,**/*.jpg,**/*.jpeg,**/*.gif,**/*.webp,**/*.woff,**/*.woff2,**/*.ttf,**/*.eot" /d:sonar.coverage.exclusions="**/*" /d:sonar.cpd.exclusions="**/Samples/LiteDb/**/*,**/Samples/PostgreSQL/**/*,**/Samples/Redis/**/*,**/Samples/SQLite/**/*,**/Samples/SQLServer/**/*"
+
+          # SampleShared first — the rest reference its compiled DLL via HintPath.
+          $solutions = @(
+            "Source\Samples\SampleShared\SampleShared.sln",
+            "Source\Samples\LiteDb\Samples.sln",
+            "Source\Samples\PostgreSQL\Samples.sln",
+            "Source\Samples\Redis\Samples.sln",
+            "Source\Samples\SQLite\Samples.sln",
+            "Source\Samples\SQLServer\Samples.sln",
+            "Source\Samples\DashBoard.Api\DashBoard.Api.sln",
+            "Source\Samples\IntegrationTests\IntegrationTests.sln"
+          )
+          foreach ($s in $solutions) {
+            dotnet build $s -c Debug --no-restore
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner end
