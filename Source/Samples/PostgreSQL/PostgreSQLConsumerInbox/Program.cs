@@ -44,6 +44,8 @@ namespace PostgreSQLConsumerInbox
                     {
                         // Do NOT log the connection string here — it contains credentials.
                         Log.Error("Queue '{QueueName}' does not exist. Run PostgreSQLProducerOutbox first; it creates the queue and seeds OrderCreatedEvent messages.", queueName);
+                        //flush the telemetry emitted during startup before bailing out
+                        Injectors.ShutdownTelemetry();
                         return;
                     }
                 }

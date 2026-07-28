@@ -38,6 +38,8 @@ namespace PostGreSQLConsumer
                     {
                         //the consumer can't do anything if the queue hasn't been created
                         Log.Error($"Could not find {connectionString}. Verify that you have run the producer, which will create the queue");
+                        //flush the telemetry emitted during startup before bailing out
+                        Injectors.ShutdownTelemetry();
                         return;
                     }
                 }

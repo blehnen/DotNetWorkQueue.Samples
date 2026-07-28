@@ -39,6 +39,8 @@ namespace LiteDbConsumerAsync
                     {
                         //the consumer can't do anything if the queue hasn't been created
                         Log.Error($"Could not find {connectionString}. Verify that you have run the producer, which will create the queue");
+                        //flush the telemetry emitted during startup before bailing out
+                        Injectors.ShutdownTelemetry();
                         return;
                     }
                 }
@@ -49,7 +51,7 @@ namespace LiteDbConsumerAsync
 #endif
             using (var schedulerContainer = new SchedulerContainer(serviceRegister =>
                 Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics,
-                    SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "SQLiteConsumerAsync",
+                    SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "LiteDbConsumerAsync",
                     serviceRegister), options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
             {
                 using (var scheduler = schedulerContainer.CreateTaskScheduler())

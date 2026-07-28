@@ -29,7 +29,7 @@ namespace LiteDbConsumer
             var connectionString = $"Filename={fileLocation}{ConfigurationManager.AppSettings.ReadSetting("Database")};Connection=shared;";
             var queueConnection = new QueueConnection(queueName, connectionString);
             using (var createQueueContainer = new QueueCreationContainer<LiteDbMessageQueueInit>(serviceRegister =>
-                Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "SQLiteConsumer", serviceRegister)
+                Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "LiteDbConsumer", serviceRegister)
                 , options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
             {
                 using (var createQueue =
@@ -39,6 +39,8 @@ namespace LiteDbConsumer
                     {
                         //the consumer can't do anything if the queue hasn't been created
                         Log.Error($"Could not find {connectionString}. Verify that you have run the producer, which will create the queue");
+                        //flush the telemetry emitted during startup before bailing out
+                        Injectors.ShutdownTelemetry();
                         return;
                     }
                 }

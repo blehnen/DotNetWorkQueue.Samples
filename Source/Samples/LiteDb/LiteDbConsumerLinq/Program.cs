@@ -42,6 +42,8 @@ namespace LiteDbConsumerLinq
                         //the consumer can't do anything if the queue hasn't been created
                         Log.Error(
                             $"Could not find {connectionString}. Verify that you have run the producer, which will create the queue");
+                        //flush the telemetry emitted during startup before bailing out
+                        Injectors.ShutdownTelemetry();
                         return;
                     }
                 }
@@ -95,9 +97,6 @@ namespace LiteDbConsumerLinq
                             queue.Start(CreateNotifications.Create(log));
                             Helpers.WaitForCancelKeyPress();
 
-                            //flush telemetry still sitting in the exporters' batch queues; without this the
-                            //last few seconds of traces and metrics are dropped when the process exits
-                            Injectors.ShutdownTelemetry();
                         }
                     }
                 }
@@ -105,6 +104,10 @@ namespace LiteDbConsumerLinq
 #if NET8_0_OR_GREATER
             Injectors.StopDashboardRegistration(dashboardClient);
 #endif
+
+            //flush telemetry still sitting in the exporters' batch queues; without this the
+            //last few seconds of traces and metrics are dropped when the process exits
+            Injectors.ShutdownTelemetry();
         }
     }
 }

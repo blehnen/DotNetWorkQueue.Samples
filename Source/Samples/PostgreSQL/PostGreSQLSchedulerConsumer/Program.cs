@@ -40,6 +40,8 @@ namespace PostGreSQLSchedulerConsumer
                         //the consumer can't do anything if the queue hasn't been created
                         Log.Error(
                             $"Could not find {connectionString}. Verify that you have run the producer, which will create the queue");
+                        //flush the telemetry emitted during startup before bailing out
+                        Injectors.ShutdownTelemetry();
                         return;
                     }
                 }
@@ -64,7 +66,7 @@ namespace PostGreSQLSchedulerConsumer
                     using (var queueContainer = new QueueContainer<PostgreSqlMessageQueueInit>(serviceRegister =>
                         Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics,
                             SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption,
-                            "SQLServerSchedulerConsumer", serviceRegister), options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
+                            "PostgreSqlSchedulerConsumer", serviceRegister), options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
                     {
                         using (var queue =
                             queueContainer.CreateConsumerMethodQueueScheduler(queueConnection, factory))

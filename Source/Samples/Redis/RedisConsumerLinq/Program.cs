@@ -75,9 +75,6 @@ namespace RedisConsumerLinq
                             queue.Start(CreateNotifications.Create(log));
                             Helpers.WaitForCancelKeyPress();
 
-                            //flush telemetry still sitting in the exporters' batch queues; without this the
-                            //last few seconds of traces and metrics are dropped when the process exits
-                            Injectors.ShutdownTelemetry();
                         }
                     }
                 }
@@ -85,6 +82,10 @@ namespace RedisConsumerLinq
 #if NET8_0_OR_GREATER
             Injectors.StopDashboardRegistration(dashboardClient);
 #endif
+
+            //flush telemetry still sitting in the exporters' batch queues; without this the
+            //last few seconds of traces and metrics are dropped when the process exits
+            Injectors.ShutdownTelemetry();
         }
     }
 }

@@ -75,7 +75,7 @@ namespace LiteDbProducerConsumer
             using (var createQueueContainer = new QueueCreationContainer<LiteDbMessageQueueInit>(serviceRegister =>
                     Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace,
                         SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression,
-                        SharedConfiguration.EnableEncryption, "LiteDbProducer", serviceRegister)
+                        SharedConfiguration.EnableEncryption, "LiteDbProducerConsumer", serviceRegister)
                 , options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
             {
                 using (var createQueue =
