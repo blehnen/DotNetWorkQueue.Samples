@@ -23,7 +23,13 @@ namespace SampleShared
     public static class Injectors
     {
         private static MetricsNet _metrics;
+
+        //The MeterProvider and TracerProvider own the export pipelines. They must stay referenced
+        //for the life of the process - if either is collected, its exporter stops and telemetry
+        //silently dries up. Hold both in static fields and dispose them via ShutdownTelemetry so
+        //the final batch is flushed rather than lost on exit.
         private static MeterProvider _meterProvider;
+        private static TracerProvider _tracerProvider;
         private static ActivitySource _tracer;
 
         public static void AddInjectors(ILoggerFactory logFactory,
@@ -114,6 +120,7 @@ namespace SampleShared
             var otlpEndpoint = metricsConfig?["OtlpEndpoint"];
 
             var meterBuilder = Sdk.CreateMeterProviderBuilder()
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName))
                 .AddMeter("DotNetWorkQueue");
 
             if (!string.IsNullOrEmpty(otlpEndpoint))
@@ -226,7 +233,7 @@ namespace SampleShared
                 .Build()
                 .GetSection("Jaeger");
 
-            var openTelemetry = Sdk.CreateTracerProviderBuilder()
+            _tracerProvider = Sdk.CreateTracerProviderBuilder()
                 .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(configuration["JAEGER_SERVICE_NAME"]))
                 .AddSource(configuration["JAEGER_SERVICE_NAME"], configuration["JAEGER_SERVICE_NAME"])
                 .AddOtlpExporter(o =>
@@ -250,6 +257,27 @@ namespace SampleShared
 
             _tracer = new ActivitySource(configuration["JAEGER_SERVICE_NAME"]);
             container.RegisterNonScopedSingleton(_tracer);
+        }
+
+        /// <summary>
+        /// Disposes the metrics and tracing providers, flushing whatever is still buffered.
+        /// </summary>
+        /// <remarks>
+        /// Both exporters batch on a timer (5s for metrics, 5s for traces), so a sample that just
+        /// exits drops everything queued since the last export. Call this before returning from
+        /// Main to flush instead. Safe to call more than once, and safe to call when telemetry
+        /// was never enabled.
+        /// </remarks>
+        public static void ShutdownTelemetry()
+        {
+            _meterProvider?.Dispose();
+            _meterProvider = null;
+
+            _tracerProvider?.Dispose();
+            _tracerProvider = null;
+
+            _tracer?.Dispose();
+            _tracer = null;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace LiteDbProducerConsumer
                 case 2:
                     connectionString = $"Filename={fileLocation}{ConfigurationManager.AppSettings.ReadSetting("Database")};Connection=shared;";
                     break;
-                case 3:
+                default:
                     connectionString = ":memory:";
                     break;
             }
@@ -75,7 +75,7 @@ namespace LiteDbProducerConsumer
             using (var createQueueContainer = new QueueCreationContainer<LiteDbMessageQueueInit>(serviceRegister =>
                     Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace,
                         SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression,
-                        SharedConfiguration.EnableEncryption, "LiteDbProducer", serviceRegister)
+                        SharedConfiguration.EnableEncryption, "LiteDbProducerConsumer", serviceRegister)
                 , options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
             {
                 using (var createQueue =
@@ -101,7 +101,7 @@ namespace LiteDbProducerConsumer
 #endif
                 //create the consumer and the producer
                 using (var queueContainer = new QueueContainer<LiteDbMessageQueueInit>(
-                    x => RegisterService(x, log, scope),
+                    x => RegisterService(x, scope),
                     options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
                 {
                     using (var consumeQueue = queueContainer.CreateConsumer(queueConnection))
@@ -144,12 +144,12 @@ namespace LiteDbProducerConsumer
             //dispose of direct or memory connection (if present, noop otherwise)
             scope?.Dispose();
 
-            //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
-            if (SharedConfiguration.EnableTrace)
-                System.Threading.Thread.Sleep(2000);
+            //flush telemetry still sitting in the exporters' batch queues; without this the
+            //last few seconds of traces and metrics are dropped when the process exits
+            Injectors.ShutdownTelemetry();
         }
 
-        private static void RegisterService(IContainer container, Logger log, ICreationScope scope)
+        private static void RegisterService(IContainer container, ICreationScope scope)
         {
             Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace,
                 SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression,

@@ -28,7 +28,7 @@ namespace PostgreSQLProducerLinq
             var queueConnection = new QueueConnection(queueName, connectionString);
             //create the container for creating a new queue
             using (var createQueueContainer = new QueueCreationContainer<PostgreSqlMessageQueueInit>(serviceRegister =>
-                Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "PostgreSqlProducer", serviceRegister)
+                Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "PostgreSqlProducerLinq", serviceRegister)
                 , options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
             {
                 using (var createQueue =
@@ -53,7 +53,7 @@ namespace PostgreSQLProducerLinq
 
             //create the producer
             using (var queueContainer = new QueueContainer<PostgreSqlMessageQueueInit>(serviceRegister =>
-                Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "PostgreSqlProducer", serviceRegister)
+                Injectors.AddInjectors(Helpers.CreateForSerilog(), SharedConfiguration.EnableTrace, SharedConfiguration.EnableMetrics, SharedConfiguration.EnableCompression, SharedConfiguration.EnableEncryption, "PostgreSqlProducerLinq", serviceRegister)
                 , options => Injectors.SetOptions(options, SharedConfiguration.EnableChaos)))
             {
                 using (var queue = queueContainer.CreateMethodProducer(queueConnection))
@@ -66,9 +66,9 @@ namespace PostgreSQLProducerLinq
                 }
             }
 
-            //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
-            if (SharedConfiguration.EnableTrace)
-                System.Threading.Thread.Sleep(2000);
+            //flush telemetry still sitting in the exporters' batch queues; without this the
+            //last few seconds of traces and metrics are dropped when the process exits
+            Injectors.ShutdownTelemetry();
         }
 
         /// <summary>

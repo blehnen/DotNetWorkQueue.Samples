@@ -42,6 +42,8 @@ namespace SQLServerConsumerInbox
                     {
                         // Do NOT log the connection string here — it contains credentials.
                         Log.Error("Queue '{QueueName}' does not exist. Run SQLServerProducerOutbox first; it creates the queue and seeds OrderCreatedEvent messages.", queueName);
+                        //flush the telemetry emitted during startup before bailing out
+                        Injectors.ShutdownTelemetry();
                         return;
                     }
                 }
@@ -77,9 +79,9 @@ namespace SQLServerConsumerInbox
             Injectors.StopDashboardRegistration(dashboardClient);
 #endif
 
-            //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
-            if (SharedConfiguration.EnableTrace)
-                System.Threading.Thread.Sleep(2000);
+            //flush telemetry still sitting in the exporters' batch queues; without this the
+            //last few seconds of traces and metrics are dropped when the process exits
+            Injectors.ShutdownTelemetry();
         }
 
         private static void EnsureOrdersProjectionTable(string connectionString, ILogger log)

@@ -40,6 +40,8 @@ namespace SQLiteSchedulerConsumer
                     {
                         //the consumer can't do anything if the queue hasn't been created
                         Log.Error($"Could not find {connectionString}. Verify that you have run the producer, which will create the queue");
+                        //flush the telemetry emitted during startup before bailing out
+                        Injectors.ShutdownTelemetry();
                         return;
                     }
                 }
@@ -96,9 +98,9 @@ namespace SQLiteSchedulerConsumer
             Injectors.StopDashboardRegistration(dashboardClient);
 #endif
 
-            //if jaeger is using udp, sometimes the messages get lost; there doesn't seem to be a flush() call ?
-            if (SharedConfiguration.EnableTrace)
-                System.Threading.Thread.Sleep(2000);
+            //flush telemetry still sitting in the exporters' batch queues; without this the
+            //last few seconds of traces and metrics are dropped when the process exits
+            Injectors.ShutdownTelemetry();
         }
     }
 }
