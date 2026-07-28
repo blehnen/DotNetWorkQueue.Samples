@@ -53,9 +53,14 @@ pipeline {
                         sh 'dotnet build "Source/Samples/IntegrationTests/IntegrationTests.sln" -c Debug'
 
                         withCredentials([string(credentialsId: 'postgresql-connstring', variable: 'POSTGRESQL_CONN')]) {
+                            // Every App.config a PostgreSql-filtered test reads must get the real
+                            // connection string. The Outbox/Inbox tests read their own sample's
+                            // App.config (see PostgreSqlOutboxTests / PostgreSqlInboxTests), not
+                            // the Producer one, so they need injection too.
                             sh '''
-                                sed -i "s|key=\\"Database\\" value=\\"[^\\"]*\\"|key=\\"Database\\" value=\\"${POSTGRESQL_CONN}\\"|" \
-                                    "Source/Samples/PostgreSQL/PostgreSQLProducer/App.config"
+                                for cfg in "Source/Samples/PostgreSQL/PostgreSQLProducer/App.config" "Source/Samples/PostgreSQL/PostgreSQLProducerOutbox/App.config" "Source/Samples/PostgreSQL/PostgreSQLConsumerInbox/App.config"; do
+                                    sed -i "s|key=\\"Database\\" value=\\"[^\\"]*\\"|key=\\"Database\\" value=\\"${POSTGRESQL_CONN}\\"|" "$cfg"
+                                done
                             '''
                         }
 
@@ -78,9 +83,12 @@ pipeline {
                         sh 'dotnet build "Source/Samples/IntegrationTests/IntegrationTests.sln" -c Debug'
 
                         withCredentials([string(credentialsId: 'sqlserver-connstring', variable: 'SQLSERVER_CONN')]) {
+                            // See the PostgreSQL stage — the Outbox/Inbox tests read their own
+                            // sample's App.config, so injection has to cover those too.
                             sh '''
-                                sed -i "s|key=\\"Database\\" value=\\"[^\\"]*\\"|key=\\"Database\\" value=\\"${SQLSERVER_CONN}\\"|" \
-                                    "Source/Samples/SQLServer/SQLServerProducer/App.config"
+                                for cfg in "Source/Samples/SQLServer/SQLServerProducer/App.config" "Source/Samples/SQLServer/SQLServerProducerOutbox/App.config" "Source/Samples/SQLServer/SQLServerConsumerInbox/App.config"; do
+                                    sed -i "s|key=\\"Database\\" value=\\"[^\\"]*\\"|key=\\"Database\\" value=\\"${SQLSERVER_CONN}\\"|" "$cfg"
+                                done
                             '''
                         }
 
