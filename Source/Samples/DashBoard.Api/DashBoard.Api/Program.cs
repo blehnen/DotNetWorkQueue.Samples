@@ -149,4 +149,4 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 Log.Information("Dashboard API + UI starting...");
-app.Run();
+await app.RunAsync();
