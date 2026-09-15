@@ -8,7 +8,7 @@ Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehn
 
 ## Release discipline
 
-**When bumping `DotNetWorkQueue.*` package versions (or any transitive pins that come along for the ride), always add a dated entry to `CHANGELOG.md` in the same commit/session.** Also update the `v0.9.xx` reference in the Project Overview above and the dependency list under Architecture → Key Dependencies.
+**When bumping `DotNetWorkQueue.*` package versions (or any transitive pins that come along for the ride), always add a dated entry to `CHANGELOG.md` in the same commit/session.** Also update the version in the Project Overview above (the `(vX.Y.Z)` after the library link) and the dependency list under Architecture → Key Dependencies. Both are written as literal version numbers, so a find-and-replace on the old version catches them.
 
 ## Build Commands
 
