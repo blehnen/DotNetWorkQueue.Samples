@@ -77,7 +77,7 @@ namespace IntegrationTests
         public static void ApplyDefaultConsumerConfig(IConsumerQueue queue)
         {
             queue.Configuration.Worker.WorkerCount = 1;
-            queue.Configuration.HeartBeat.UpdateTime = "*/10 * * * * *";
+            queue.Configuration.HeartBeat.UpdateTime = TimeSpan.FromSeconds(10);
             queue.Configuration.HeartBeat.MonitorTime = TimeSpan.FromSeconds(15);
             queue.Configuration.HeartBeat.Time = TimeSpan.FromSeconds(35);
             queue.Configuration.MessageExpiration.Enabled = true;

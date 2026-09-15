@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.9.38) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer). SQL Server and PostgreSQL additionally include ProducerOutbox and ConsumerInbox (transactional outbox/inbox patterns introduced in DotNetWorkQueue 0.9.36/0.9.37).
+Sample applications demonstrating the [DotNetWorkQueue](https://github.com/blehnen/DotNetWorkQueue) distributed work queue library (v0.12.0) across multiple transport backends: Redis, SQL Server, PostgreSQL, SQLite, and LiteDB. Each transport has the same set of sample patterns (Producer, ProducerLinq, Consumer, ConsumerAsync, ConsumerLinq, Scheduler, SchedulerConsumer). SQL Server and PostgreSQL additionally include ProducerOutbox and ConsumerInbox (transactional outbox/inbox patterns introduced in DotNetWorkQueue 0.9.36/0.9.37).
 
 ## Release discipline
 
-**When bumping `DotNetWorkQueue.*` package versions (or any transitive pins that come along for the ride), always add a dated entry to `CHANGELOG.md` in the same commit/session.** Also update the `v0.9.xx` reference in the Project Overview above and the dependency list under Architecture → Key Dependencies.
+**When bumping `DotNetWorkQueue.*` package versions (or any transitive pins that come along for the ride), always add a dated entry to `CHANGELOG.md` in the same commit/session.** Also update the version in the Project Overview above (the `(vX.Y.Z)` after the library link) and the dependency list under Architecture → Key Dependencies. Both are written as literal version numbers, so a find-and-replace on the old version catches them.
 
 ## Build Commands
 
@@ -70,7 +70,7 @@ Each sample executable has:
 
 ### Key Dependencies
 
-- **DotNetWorkQueue** v0.9.38 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`, `DotNetWorkQueue.Dashboard.Ui`)
+- **DotNetWorkQueue** v0.12.0 + transport-specific packages (including `DotNetWorkQueue.Dashboard.Api`, `DotNetWorkQueue.Dashboard.Ui`)
 - **OpenTelemetry** v1.15.3 (tracing via Jaeger)
 - **App.Metrics** v4.3.0 (metrics via InfluxDB)
 - **Serilog** v4.3.0 (logging)
