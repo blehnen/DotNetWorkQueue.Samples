@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-15 — DotNetWorkQueue 0.12.0 upgrade
+
+- Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.43** to **0.12.0** across 43 csproj files (137 `PackageReference` attributes). No transitive pin changes: 0.12.0's dependency tree needs nothing the samples did not already pin, and every solution restores and builds with no NU warnings.
+- This skips 0.10.0 and 0.11.0, so it carries three releases of breaking changes rather than one. Only **one** of the 23 breaking entries across them reaches sample code.
+- `HeartBeat.UpdateTime` is a `TimeSpan` rather than a cron string ([DotNetWorkQueue#303](https://github.com/blehnen/DotNetWorkQueue/issues/303)). All 25 consumer samples and test helpers change `"*/10 * * * * *"` to `TimeSpan.FromSeconds(10)`, which is the same ten second interval.
+- 0.12.0 also refuses to start a consumer when `HeartBeat.Time` is less than three times `HeartBeat.UpdateTime`. Every sample uses `Time = 35s` against the new `UpdateTime = 10s`, so all 25 satisfy it — checked rather than assumed, since this one fails at run time rather than at compile time.
+- Nothing else in the breaking list touches the samples: they never used `IHeartBeatScheduler`, never corrected history timestamps with `ToUniversalTime()`, never set `HeartBeat.ThreadPoolConfiguration.ThreadsMax`, and implement none of the interfaces that gained async members. The SQLite and LiteDb test cleanups already delete `-wal`/`-shm` side-cars and tolerate a failed delete, which is what 0.10.0's connection pooling change asks of callers that remove database files.
+- Verified: all seven solutions build clean, and the `CI` integration tests (SQLite and LiteDb produce-consume round trips, 5 messages each) pass. The `LocalOnly` tests for SQL Server, PostgreSQL and Redis are compile-verified only — their connection strings are committed templates pointing at `localhost` with placeholder credentials.
+
 ## 2026-06-04 — DotNetWorkQueue 0.9.38 upgrade
 
 - Bump every `DotNetWorkQueue.*` package (core, transports, Dashboard.Api/Ui/Client) from **0.9.37** to **0.9.38** across 39 csproj files (137 `PackageReference` attributes). No transitive pin changes — 0.9.38's dependency tree matches 0.9.37.
