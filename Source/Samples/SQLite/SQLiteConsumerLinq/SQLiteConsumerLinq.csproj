@@ -1,7 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-     <TargetFramework>net10.0</TargetFramework>
+     <TargetFrameworks>net10.0;net48</TargetFrameworks>
+     <!-- net48 resolves the netstandard2.0 assets, which is how the samples
+          exercise that build; it needs a language version set, and binding
+          redirects, neither of which the SDK gives it by default -->
+     <LangVersion>latest</LangVersion>
+     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -10,8 +15,8 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue" Version="0.16.0" />
-    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.16.0" />
+    <PackageReference Include="DotNetWorkQueue" Version="0.17.0" />
+    <PackageReference Include="DotNetWorkQueue.Transport.SQLite" Version="0.17.0" />
     <PackageReference Include="Jaeger.Thrift" Version="0.3.7" />
     <PackageReference Include="Jaeger.Thrift.VendoredThrift" Version="0.3.7" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.9" />
@@ -46,11 +51,11 @@
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.16.0" />
+    <PackageReference Include="DotNetWorkQueue.Dashboard.Client" Version="0.17.0" />
   </ItemGroup>
 	<ItemGroup>
 		<Reference Include="SampleShared">
-			<HintPath>..\..\SampleShared\bin\Debug\net10.0\SampleShared.dll</HintPath>
+			<HintPath>..\..\SampleShared\bin\Debug\$(TargetFramework)\SampleShared.dll</HintPath>
 		</Reference>
 	</ItemGroup>
   <ItemGroup>
