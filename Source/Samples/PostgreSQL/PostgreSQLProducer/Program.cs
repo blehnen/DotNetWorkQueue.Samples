@@ -52,7 +52,7 @@ namespace PostgreSQLProducer
                         log.Information("Queue already exists; not creating");
                         //a queue from an older release has to be brought forward before a producer
                         //will start against it; nothing happens when it is already current
-                        SchemaUpgrade.BringForward<PostgreSqlMessageQueueInit>(queueConnection, log);
+                        SchemaUpgrade.BringForward<PostgreSqlMessageQueueInit>(queueConnection, log, "PostgreSqlProducer");
                     }
                 }
             }
