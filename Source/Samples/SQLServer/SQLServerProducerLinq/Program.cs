@@ -53,7 +53,13 @@ namespace SQLServerProducerLinq
                         var result = createQueue.CreateQueue();
                         log.Information(result.Status.ToString());
                     }
-                    else log.Information("Queue already exists; not creating");
+                    else
+                    {
+                        log.Information("Queue already exists; not creating");
+                        //a queue from an older release has to be brought forward before a producer
+                        //will start against it; nothing happens when it is already current
+                        SchemaUpgrade.BringForward<SqlServerMessageQueueInit>(queueConnection, log, "SQLServerProducerLinq");
+                    }
                 }
             }
 
